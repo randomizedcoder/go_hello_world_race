@@ -2,23 +2,27 @@
 # sysroot/BUILD.bazel
 #
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_file")
-
-genrule(
-    name = "extract_sysroot",
-    srcs = ["@bazel_sysroot_tarball//file"],
-    outs = ["sysroot_marker.txt"],
-    cmd = """
-      mkdir -p $(@D)/sysroot
-      tar -xzf $(location @bazel_sysroot_tarball//file) -C $(@D)/sysroot
-      touch $@
-    """,
-    output_to_bindir = True,
+# Define the sysroot directory structure
+filegroup(
+    name = "sysroot",
+    srcs = glob([
+        "include/**",
+        "lib/**",
+    ]),
+    visibility = ["//visibility:public"],
 )
 
+# Define the include directory specifically for C/C++ headers
 filegroup(
-    name = "all",
-    srcs = glob(["**"]),
+    name = "include",
+    srcs = glob(["include/**"]),
+    visibility = ["//visibility:public"],
+)
+
+# Define the lib directory for libraries
+filegroup(
+    name = "lib",
+    srcs = glob(["lib/**"]),
     visibility = ["//visibility:public"],
 )
 

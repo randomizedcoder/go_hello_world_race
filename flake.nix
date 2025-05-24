@@ -40,21 +40,20 @@ EOF
           '';
         };
 
-      bazelrcGenerated = pkgs.runCommand "bazelrc-generated" {} ''
-        mkdir -p $out/etc/bazel
-        cat > $out/etc/bazel/bazelrc.generated <<EOF
-      build:local-sysroot --repo_env=CGO_ENABLED=1
-      build:local-sysroot --repo_env=CC=\$(pwd)/cc_wrapper.sh
-      build:local-sysroot --repo_env=CGO_CFLAGS=-I\$(pwd)/bazel-out/k8-fastbuild/bin/sysroot/sysroot/include
-      build:local-sysroot --repo_env=CGO_LDFLAGS="-L$(pwd)/bazel-out/k8-fastbuild/bin/sysroot/sysroot/lib -lz -lssl"
+        bazelrcGenerated = pkgs.runCommand "bazelrc-generated" {} ''
+          mkdir -p $out/etc/bazel
+          cat > $out/etc/bazel/bazelrc.generated <<EOF
+        build:local-sysroot --repo_env=CGO_ENABLED=1
+        build:local-sysroot --repo_env=CC=\$(pwd)/cc_wrapper.sh
+        build:local-sysroot --repo_env=CGO_CFLAGS=-I\$(pwd)/external/+_repo_rules+bazel_sysroot_tarball/include
+        build:local-sysroot --repo_env=CGO_LDFLAGS="-L\$(pwd)/external/+_repo_rules+bazel_sysroot_tarball/lib -Wl,-rpath=\$(pwd)/external/+_repo_rules+bazel_sysroot_tarball/lib -lz -lssl -lxml2 -lyaml -lffi -ledit -lncurses"
 
-      build:local-sysroot --action_env=CGO_ENABLED=1
-      build:local-sysroot --action_env=CC=\$(pwd)/cc_wrapper.sh
-      build:local-sysroot --action_env=CGO_CFLAGS=-I\$(pwd)/bazel-out/k8-fastbuild/bin/sysroot/sysroot/include
-      build:local-sysroot --action_env=CGO_LDFLAGS="-L$(pwd)/bazel-out/k8-fastbuild/bin/sysroot/sysroot/lib -lz -lssl"
-
-      EOF
-      '';
+        build:local-sysroot --action_env=CGO_ENABLED=1
+        build:local-sysroot --action_env=CC=\$(pwd)/cc_wrapper.sh
+        build:local-sysroot --action_env=CGO_CFLAGS=-I\$(pwd)/external/+_repo_rules+bazel_sysroot_tarball/include
+        build:local-sysroot --action_env=CGO_LDFLAGS="-L\$(pwd)/external/+_repo_rules+bazel_sysroot_tarball/lib -Wl,-rpath=\$(pwd)/external/+_repo_rules+bazel_sysroot_tarball/lib -lz -lssl -lxml2 -lyaml -lffi -ledit -lncurses"
+        EOF
+        '';
 
       in {
         packages = {

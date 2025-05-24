@@ -1,0 +1,73 @@
+# WORKSPACE.bazel
+
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
+
+# rules_go and Gazelle
+http_archive(
+    name = "io_bazel_rules_go",
+    urls = ["https://github.com/bazelbuild/rules_go/releases/download/v0.54.0/rules_go-v0.54.0.zip"],
+    sha256 = "f2d15bea3e241aa0e3a90fb17a82e6a8ab12214789f6aeddd53b8d04316d2b7c",
+)
+
+# dup with different name.  rules_go is the bazel module name
+http_archive(
+    name = "rules_go",
+    urls = ["https://github.com/bazelbuild/rules_go/releases/download/v0.54.0/rules_go-v0.54.0.zip"],
+    sha256 = "f2d15bea3e241aa0e3a90fb17a82e6a8ab12214789f6aeddd53b8d04316d2b7c",
+)
+
+http_archive(
+    name = "bazel_gazelle",
+    urls = ["https://github.com/bazelbuild/bazel-gazelle/releases/download/v0.43.0/bazel-gazelle-v0.43.0.tar.gz"],
+    sha256 = "7c40b746387cd0c9a4d5bb0b2035abd134b3f7511015710a5ee5e07591008dde",
+)
+
+load("@io_bazel_rules_go//go:deps.bzl", "go_rules_dependencies", "go_register_toolchains")
+go_rules_dependencies()
+go_register_toolchains(version = "1.24.2")
+
+# sysroot repository from git
+git_repository(
+    name = "bazel_sysroot_tarball",
+    remote = "https://github.com/randomizedcoder/bazel_remote_runner_sysroot.git",
+    commit = "70bd16f51104e2c9331ef47f6ff4c0a9db7834c9",
+    strip_prefix = "sysroot",
+)
+
+# toolchains_llvm - using local server for faster builds
+http_archive(
+    name = "toolchains_llvm",
+    urls = [
+        "http://hp4:8080/toolchains_llvm-v1.4.0.tar.gz",  # Local mirror for faster builds
+        # "https://github.com/bazel-contrib/toolchains_llvm/releases/download/v1.4.0/toolchains_llvm-v1.4.0.tar.gz",  # Original URL
+    ],
+    sha256 = "fded02569617d24551a0ad09c0750dc53a3097237157b828a245681f0ae739f8",
+    strip_prefix = "toolchains_llvm-v1.4.0",
+)
+
+load("@toolchains_llvm//toolchain:deps.bzl", "llvm_toolchain_deps")
+llvm_toolchain_deps()
+
+load("@toolchains_llvm//toolchain:repositories.bzl", "llvm_toolchain_repositories")
+llvm_toolchain_repositories()
+
+load("@toolchains_llvm//toolchain:register.bzl", "register_llvm_toolchains")
+register_llvm_toolchains(
+    name = "llvm_toolchain",
+    llvm_version = "20.1.2",
+)
+
+register_toolchains("@toolchains_llvm//:all")
+
+# Prevent cc_autoconf by setting a dummy toolchain
+register_toolchains("@bazel_tools//tools/cpp:default_toolchain")
+
+http_archive(
+    name = "platforms",
+    urls = ["https://github.com/bazelbuild/platforms/archive/refs/tags/0.0.11.tar.gz"],
+    sha256 = "ace459f5d033c86e6578df817f739b21101c0ebcd409a97badc2979c22ce9fdc",
+    strip_prefix = "platforms-0.0.11",
+)
+
+# end

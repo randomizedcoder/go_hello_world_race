@@ -14,6 +14,9 @@ pkgs.runCommand "sysroot" {
     zlib.dev zlib.out zlib
     openssl.dev openssl.out
     libyaml.dev libyaml.out
+    libxml2.dev libxml2.out
+    libffi.dev libffi.out
+    libedit.dev libedit.out
   ];
 } ''
   # Create sysroot structure
@@ -50,6 +53,15 @@ pkgs.runCommand "sysroot" {
   echo "Copying libyaml headers..."
   cp -Lr ${pkgs.libyaml.dev}/include/* $out/sysroot/include/ || true
 
+  echo "Copying libxml2 headers..."
+  cp -Lr ${pkgs.libxml2.dev}/include/* $out/sysroot/include/ || true
+
+  echo "Copying libffi headers..."
+  cp -Lr ${pkgs.libffi.dev}/include/* $out/sysroot/include/ || true
+
+  echo "Copying libedit headers..."
+  cp -Lr ${pkgs.libedit.dev}/include/* $out/sysroot/include/ || true
+
   # Copy libraries
   echo "Copying LLVM/Clang libraries..."
   cp -Lr ${pkgs.llvmPackages_20.libcxx.out}/lib/* $out/sysroot/lib/ || true
@@ -68,6 +80,15 @@ pkgs.runCommand "sysroot" {
 
   echo "Copying libyaml libraries..."
   cp -Lr ${pkgs.libyaml.out}/lib/* $out/sysroot/lib/ || true
+
+  echo "Copying libxml2 libraries..."
+  cp -Lr ${pkgs.libxml2.out}/lib/* $out/sysroot/lib/ || true
+
+  echo "Copying libffi libraries..."
+  cp -Lr ${pkgs.libffi.out}/lib/* $out/sysroot/lib/ || true
+
+  echo "Copying libedit libraries..."
+  cp -Lr ${pkgs.libedit.out}/lib/* $out/sysroot/lib/ || true
 
   # Create tarball
   echo "Creating BUILD file..."
