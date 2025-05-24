@@ -12,6 +12,10 @@ exec clang \
   -isystem "$PWD/external/+_repo_rules+bazel_sysroot_tarball/include" \
   -L"$PWD/external/+_repo_rules+bazel_sysroot_tarball/lib" \
   -Wl,-rpath,"$PWD/external/+_repo_rules+bazel_sysroot_tarball/lib" \
+  -Wl,--no-as-needed \
+  -Wl,--whole-archive \
+  -lxml2 \
+  -Wl,--no-whole-archive \
   "$@"
 
 # end

@@ -78,10 +78,6 @@ go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(
     name = "go_sdk",
     version = "1.22.0",
-    cgo = True,
-    cgo_ldflags = [
-        "-fuse-ld=bfd",  # Use GNU ld instead of lld
-    ],
 )
 use_repo(go_sdk, "go_sdk")
 
