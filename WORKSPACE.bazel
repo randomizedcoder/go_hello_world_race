@@ -1,0 +1,13 @@
+#
+# WORKSPACE.bazel
+#
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "bazel_sysroot_tarball",
+    urls = ["http://hp4:8080/sysroot.tar.gz"],
+    sha256 = "950ec77f10147ef1eaa7d44e3703b0c007bd2bfe02a4764eb785a3db834be913",
+    strip_prefix = "sysroot",  # Adjust if needed
+)
+
+# end

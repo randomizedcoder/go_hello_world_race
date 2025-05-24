@@ -1,0 +1,10 @@
+build:local-sysroot --repo_env=CGO_ENABLED=1
+build:local-sysroot --repo_env=CC=$(pwd)/cc_wrapper.sh
+build:local-sysroot --repo_env=CGO_CFLAGS=-I$(pwd)/bazel-out/k8-fastbuild/bin/sysroot/sysroot/include
+build:local-sysroot --repo_env=CGO_LDFLAGS="-L/build/bazel-out/k8-fastbuild/bin/sysroot/sysroot/lib -lz -lssl"
+
+build:local-sysroot --action_env=CGO_ENABLED=1
+build:local-sysroot --action_env=CC=$(pwd)/cc_wrapper.sh
+build:local-sysroot --action_env=CGO_CFLAGS=-I$(pwd)/bazel-out/k8-fastbuild/bin/sysroot/sysroot/include
+build:local-sysroot --action_env=CGO_LDFLAGS="-L/build/bazel-out/k8-fastbuild/bin/sysroot/sysroot/lib -lz -lssl"
+
