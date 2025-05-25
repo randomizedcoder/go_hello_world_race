@@ -1,0 +1,29 @@
+#
+# sysroot/BUILD.bazel
+#
+
+# Define the sysroot directory structure
+filegroup(
+    name = "sysroot",
+    srcs = glob([
+        "include/**",
+        "lib/**",
+    ]),
+    visibility = ["//visibility:public"],
+)
+
+# Define the include directory specifically for C/C++ headers
+filegroup(
+    name = "include",
+    srcs = glob(["include/**"]),
+    visibility = ["//visibility:public"],
+)
+
+# Define the lib directory for libraries
+filegroup(
+    name = "lib",
+    srcs = glob(["lib/**"]),
+    visibility = ["//visibility:public"],
+)
+
+# end

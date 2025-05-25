@@ -1,0 +1,715 @@
+[nix-shell:~/Downloads/go_hello_world_race]$ bazelisk clean --expunge && make test_local
+INFO: Starting clean (this may take a while). Use --async if the clean takes more than several minutes.
+bazelisk test //:hello_test --features=race --sandbox_debug --verbose_failures
+Starting local Bazel server (8.2.1rc1) and connecting to it...
+DEBUG: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/rules_go+/go/private/context.bzl:659:14: WARNING: --features=race is no longer supported. Use --@io_bazel_rules_go//go/config:race instead.
+INFO: Analyzed target //:hello_test (91 packages loaded, 18220 targets configured).
+DEBUG: Sandbox debug output for GoToolchainBinaryBuild @@rules_go++go_sdk+go_sdk//:builder:
+1748035568.525003477: src/main/tools/linux-sandbox.cc:165: calling pipe(2)...
+1748035568.527354410: src/main/tools/linux-sandbox.cc:177: Netns is 0
+1748035568.527379530: src/main/tools/linux-sandbox.cc:188: calling clone(2)...
+1748035568.528373136: src/main/tools/linux-sandbox.cc:204: linux-sandbox-pid1 has PID 2302355
+1748035568.528450896: src/main/tools/linux-sandbox-pid1.cc:681: Pid1Main started
+1748035568.528715992: src/main/tools/linux-sandbox.cc:212: done manipulating pipes
+1748035568.532710828: src/main/tools/linux-sandbox-pid1.cc:264: bind mount: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/_hermetic_tmp -> /tmp
+1748035568.532772372: src/main/tools/linux-sandbox-pid1.cc:282: writable: /dev/shm
+1748035568.532799279: src/main/tools/linux-sandbox-pid1.cc:282: writable: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/execroot/_main
+1748035568.532827616: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp
+1748035568.532846002: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp/nix-shell-369795-0
+1748035568.532864836: src/main/tools/linux-sandbox-pid1.cc:299: working dir: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/execroot/_main
+1748035568.533053909: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /
+1748035568.533076571: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev
+1748035568.533092377: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/pts
+1748035568.533107347: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035568.533122943: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/mqueue
+1748035568.533137184: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/hugepages
+1748035568.533151392: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc
+1748035568.533166304: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035568.533184675: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /proc/sys/fs/binfmt_misc, nullptr, 2101281, nullptr) failure (Operation not permitted) ignored
+1748035568.533222726: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035568.533241971: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix
+1748035568.533254920: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store
+1748035568.533269946: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc
+1748035568.533332131: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc/rpc
+1748035568.533348707: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc
+1748035568.533362942: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/bash_completion.d
+1748035568.533376328: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/cups
+1748035568.533389435: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/dbus-1
+1748035568.533423443: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-2.0
+1748035568.533445764: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-3.0
+1748035568.533458802: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/locale
+1748035568.533471802: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/man
+1748035568.533484639: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pam.d
+1748035568.533542959: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkcs11
+1748035568.533557257: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkgconfig
+1748035568.533570049: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/profile.d
+1748035568.533582703: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/systemd
+1748035568.533595252: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/X11
+1748035568.533608216: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xdg
+1748035568.533621448: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xinetd.d
+1748035568.533655609: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /usr
+1748035568.533668356: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /.host-etc
+1748035568.533724454: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /boot
+1748035568.533739293: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /build
+1748035568.533753789: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /efi
+1748035568.533767235: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home
+1748035568.533914147: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged
+1748035568.534134493: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035568.534155371: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /lost+found
+1748035568.534173010: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /opt
+1748035568.534186827: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /root
+1748035568.534200686: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run
+1748035568.534215095: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/keys
+1748035568.534232129: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-journald.service
+1748035568.534248172: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev-early.service
+1748035568.534263478: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev.service
+1748035568.534336337: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/wrappers
+1748035568.534353792: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-vconsole-setup.service
+1748035568.534367888: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup.service
+1748035568.534382392: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-sysctl.service
+1748035568.534395142: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/bpftune/cgroupv2
+1748035568.534434089: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/bpftune/cgroupv2, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035568.534447521: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/getty@tty1.service
+1748035568.534460731: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/docker/netns/18dc5a905048
+1748035568.534469503: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/docker/netns/18dc5a905048, nullptr, 4129, nullptr) failure (Permission denied) ignored
+1748035568.534479657: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000
+1748035568.534496110: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/gvfs
+1748035568.534512262: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/doc
+1748035568.534583033: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /srv
+1748035568.534598939: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys
+1748035568.534612819: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/security
+1748035568.534632530: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/cgroup
+1748035568.534648957: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/pstore
+1748035568.534664263: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/firmware/efi/efivars
+1748035568.534683236: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/bpf
+1748035568.534699097: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/debug
+1748035568.534714555: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/fuse/connections
+1748035568.534731972: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/config
+1748035568.534747869: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035568.534781326: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix
+1748035568.534806228: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035568.534818521: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix/X0
+1748035568.534826570: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix/X0, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035568.534872651: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /valkey_data
+1748035568.534887229: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /var
+1748035568.534900155: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035568.534913332: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035568.534928510: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/execroot/_main
+1748035568.534947051: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035568.534959779: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp/nix-shell-369795-0
+1748035568.534973328: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/execroot/_main
+1748035568.535091364: src/main/tools/linux-sandbox-pid1.cc:482: calling fork...
+1748035568.535480718: src/main/tools/linux-sandbox-pid1.cc:519: child started with PID 2
+1748035595.340517765: src/main/tools/linux-sandbox-pid1.cc:536: wait returned pid=2, status=0x00
+1748035595.340533504: src/main/tools/linux-sandbox-pid1.cc:554: child exited normally with code 0
+1748035595.341028820: src/main/tools/linux-sandbox.cc:253: child exited normally with code 0
+
+Run this command to start an interactive shell in an identical sandboxed environment:
+(exec env - \
+    TMPDIR=/tmp/nix-shell-369795-0 \
+  /home/das/.cache/bazel/_bazel_das/install/254cc618fc52f01b2b1d5fd6ff343774/linux-sandbox -t 15 -w /dev/shm -w /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/execroot/_main -w /tmp -w /tmp/nix-shell-369795-0 -M /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/_hermetic_tmp -m /tmp -S /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/stats.out -D /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/1/debug.out -- /bin/sh -i)
+DEBUG: Sandbox debug output for GoTestGenTest //:hello_test:
+1748035595.404430098: src/main/tools/linux-sandbox.cc:165: calling pipe(2)...
+1748035595.404463298: src/main/tools/linux-sandbox.cc:177: Netns is 0
+1748035595.404465749: src/main/tools/linux-sandbox.cc:188: calling clone(2)...
+1748035595.404745544: src/main/tools/linux-sandbox.cc:204: linux-sandbox-pid1 has PID 2303219
+1748035595.404770857: src/main/tools/linux-sandbox-pid1.cc:681: Pid1Main started
+1748035595.404855270: src/main/tools/linux-sandbox.cc:212: done manipulating pipes
+1748035595.404949212: src/main/tools/linux-sandbox-pid1.cc:264: bind mount: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/_hermetic_tmp -> /tmp
+1748035595.404967281: src/main/tools/linux-sandbox-pid1.cc:282: writable: /dev/shm
+1748035595.404976187: src/main/tools/linux-sandbox-pid1.cc:282: writable: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/execroot/_main
+1748035595.404984014: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp
+1748035595.404989451: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp/nix-shell-369795-0
+1748035595.404995785: src/main/tools/linux-sandbox-pid1.cc:299: working dir: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/execroot/_main
+1748035595.405058839: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /
+1748035595.405066143: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev
+1748035595.405070682: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/pts
+1748035595.405074774: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035595.405078910: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/mqueue
+1748035595.405082808: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/hugepages
+1748035595.405086804: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc
+1748035595.405090928: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035595.405097289: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /proc/sys/fs/binfmt_misc, nullptr, 2101281, nullptr) failure (Operation not permitted) ignored
+1748035595.405111069: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035595.405116061: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix
+1748035595.405119703: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store
+1748035595.405123864: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc
+1748035595.405141241: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc/rpc
+1748035595.405146061: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc
+1748035595.405149760: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/bash_completion.d
+1748035595.405153351: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/cups
+1748035595.405157176: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/dbus-1
+1748035595.405160443: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-2.0
+1748035595.405163574: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-3.0
+1748035595.405166953: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/locale
+1748035595.405170107: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/man
+1748035595.405173269: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pam.d
+1748035595.405188969: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkcs11
+1748035595.405192796: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkgconfig
+1748035595.405196234: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/profile.d
+1748035595.405199317: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/systemd
+1748035595.405202394: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/X11
+1748035595.405205725: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xdg
+1748035595.405208932: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xinetd.d
+1748035595.405219479: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /usr
+1748035595.405222981: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /.host-etc
+1748035595.405239486: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /boot
+1748035595.405243741: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /build
+1748035595.405247065: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /efi
+1748035595.405250522: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home
+1748035595.405268983: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged
+1748035595.405272852: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035595.405275723: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /lost+found
+1748035595.405279603: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /opt
+1748035595.405283007: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /root
+1748035595.405291306: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run
+1748035595.405295354: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/keys
+1748035595.405299907: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-journald.service
+1748035595.405305013: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev-early.service
+1748035595.405309309: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev.service
+1748035595.405331387: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/wrappers
+1748035595.405335771: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-vconsole-setup.service
+1748035595.405339650: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup.service
+1748035595.405343430: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-sysctl.service
+1748035595.405346910: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/bpftune/cgroupv2
+1748035595.405349494: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/bpftune/cgroupv2, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035595.405352053: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/getty@tty1.service
+1748035595.405355373: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/docker/netns/18dc5a905048
+1748035595.405357654: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/docker/netns/18dc5a905048, nullptr, 4129, nullptr) failure (Permission denied) ignored
+1748035595.405360435: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000
+1748035595.405364678: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/gvfs
+1748035595.405369315: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/doc
+1748035595.405390989: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /srv
+1748035595.405394954: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys
+1748035595.405407551: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/security
+1748035595.405420047: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/cgroup
+1748035595.405425137: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/pstore
+1748035595.405429608: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/firmware/efi/efivars
+1748035595.405435045: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/bpf
+1748035595.405439355: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/debug
+1748035595.405443509: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/fuse/connections
+1748035595.405448703: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/config
+1748035595.405453102: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035595.405461307: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix
+1748035595.405469160: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035595.405472283: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix/X0
+1748035595.405474551: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix/X0, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035595.405486927: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /valkey_data
+1748035595.405490719: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /var
+1748035595.405494094: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035595.405497447: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035595.405501535: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/execroot/_main
+1748035595.405506585: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035595.405509998: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp/nix-shell-369795-0
+1748035595.405513703: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/execroot/_main
+1748035595.405552941: src/main/tools/linux-sandbox-pid1.cc:482: calling fork...
+1748035595.405685612: src/main/tools/linux-sandbox-pid1.cc:519: child started with PID 2
+1748035595.408281693: src/main/tools/linux-sandbox-pid1.cc:536: wait returned pid=2, status=0x00
+1748035595.408292714: src/main/tools/linux-sandbox-pid1.cc:554: child exited normally with code 0
+1748035595.408770795: src/main/tools/linux-sandbox.cc:253: child exited normally with code 0
+
+Run this command to start an interactive shell in an identical sandboxed environment:
+(exec env - \
+    CGO_ENABLED=1 \
+    GOARCH=amd64 \
+    GODEBUG='winsymlink=0' \
+    GOEXPERIMENT=nocoverageredesign \
+    GOOS=linux \
+    GOPATH='' \
+    GOROOT_FINAL=GOROOT \
+    GOTOOLCHAIN=local \
+    PATH=external/toolchains_llvm++llvm+llvm_toolchain/bin:/bin:/usr/bin \
+    TMPDIR=/tmp/nix-shell-369795-0 \
+    ZERO_AR_DATE=1 \
+  /home/das/.cache/bazel/_bazel_das/install/254cc618fc52f01b2b1d5fd6ff343774/linux-sandbox -t 15 -w /dev/shm -w /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/execroot/_main -w /tmp -w /tmp/nix-shell-369795-0 -M /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/_hermetic_tmp -m /tmp -S /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/stats.out -D /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/2/debug.out -- /bin/sh -i)
+DEBUG: Sandbox debug output for GoStdlib @@rules_go+//:stdlib:
+1748035595.961697631: src/main/tools/linux-sandbox.cc:165: calling pipe(2)...
+1748035595.961732846: src/main/tools/linux-sandbox.cc:177: Netns is 0
+1748035595.961735428: src/main/tools/linux-sandbox.cc:188: calling clone(2)...
+1748035595.962052568: src/main/tools/linux-sandbox.cc:204: linux-sandbox-pid1 has PID 2303230
+1748035595.962114430: src/main/tools/linux-sandbox-pid1.cc:681: Pid1Main started
+1748035595.962211309: src/main/tools/linux-sandbox.cc:212: done manipulating pipes
+1748035595.962319397: src/main/tools/linux-sandbox-pid1.cc:264: bind mount: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/_hermetic_tmp -> /tmp
+1748035595.962339336: src/main/tools/linux-sandbox-pid1.cc:282: writable: /dev/shm
+1748035595.962349028: src/main/tools/linux-sandbox-pid1.cc:282: writable: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/execroot/_main
+1748035595.962358090: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp
+1748035595.962364154: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp/nix-shell-369795-0
+1748035595.962371274: src/main/tools/linux-sandbox-pid1.cc:299: working dir: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/execroot/_main
+1748035595.962452780: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /
+1748035595.962467657: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev
+1748035595.962473056: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/pts
+1748035595.962477694: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035595.962482411: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/mqueue
+1748035595.962487216: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/hugepages
+1748035595.962491522: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc
+1748035595.962496195: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035595.962503882: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /proc/sys/fs/binfmt_misc, nullptr, 2101281, nullptr) failure (Operation not permitted) ignored
+1748035595.962519006: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035595.962524763: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix
+1748035595.962528841: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store
+1748035595.962533700: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc
+1748035595.962555170: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc/rpc
+1748035595.962561043: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc
+1748035595.962565125: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/bash_completion.d
+1748035595.962569190: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/cups
+1748035595.962573055: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/dbus-1
+1748035595.962576835: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-2.0
+1748035595.962580609: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-3.0
+1748035595.962584152: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/locale
+1748035595.962587872: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/man
+1748035595.962591583: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pam.d
+1748035595.962609555: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkcs11
+1748035595.962613914: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkgconfig
+1748035595.962617957: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/profile.d
+1748035595.962621937: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/systemd
+1748035595.962625547: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/X11
+1748035595.962629637: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xdg
+1748035595.962633325: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xinetd.d
+1748035595.962645840: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /usr
+1748035595.962649822: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /.host-etc
+1748035595.962668560: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /boot
+1748035595.962673097: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /build
+1748035595.962676834: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /efi
+1748035595.962680754: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home
+1748035595.962702191: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged
+1748035595.962706680: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035595.962710072: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /lost+found
+1748035595.962714378: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /opt
+1748035595.962718148: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /root
+1748035595.962722401: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run
+1748035595.962726511: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/keys
+1748035595.962731438: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-journald.service
+1748035595.962736662: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev-early.service
+1748035595.962741670: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev.service
+1748035595.962765977: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/wrappers
+1748035595.962771116: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-vconsole-setup.service
+1748035595.962775709: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup.service
+1748035595.962779993: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-sysctl.service
+1748035595.962783794: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/bpftune/cgroupv2
+1748035595.962786702: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/bpftune/cgroupv2, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035595.962789713: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/getty@tty1.service
+1748035595.962793339: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/docker/netns/18dc5a905048
+1748035595.962796116: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/docker/netns/18dc5a905048, nullptr, 4129, nullptr) failure (Permission denied) ignored
+1748035595.962799169: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000
+1748035595.962804385: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/gvfs
+1748035595.962809497: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/doc
+1748035595.962835221: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /srv
+1748035595.962840386: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys
+1748035595.962844483: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/security
+1748035595.962851564: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/cgroup
+1748035595.962857564: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/pstore
+1748035595.962862321: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/firmware/efi/efivars
+1748035595.962868863: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/bpf
+1748035595.962873772: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/debug
+1748035595.962878827: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/fuse/connections
+1748035595.962884892: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/config
+1748035595.962890008: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035595.962898779: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix
+1748035595.962907068: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035595.962910486: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix/X0
+1748035595.962912989: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix/X0, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035595.962927048: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /valkey_data
+1748035595.962931674: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /var
+1748035595.962935479: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035595.962939184: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035595.962944142: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/execroot/_main
+1748035595.962949825: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035595.962953443: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp/nix-shell-369795-0
+1748035595.962957486: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/execroot/_main
+1748035595.963005641: src/main/tools/linux-sandbox-pid1.cc:482: calling fork...
+1748035595.963147056: src/main/tools/linux-sandbox-pid1.cc:519: child started with PID 2
+1748035621.924244996: src/main/tools/linux-sandbox-pid1.cc:536: wait returned pid=2, status=0x00
+1748035621.924264833: src/main/tools/linux-sandbox-pid1.cc:554: child exited normally with code 0
+1748035621.924748299: src/main/tools/linux-sandbox.cc:253: child exited normally with code 0
+
+Run this command to start an interactive shell in an identical sandboxed environment:
+(exec env - \
+    CC=external/toolchains_llvm++llvm+llvm_toolchain/bin/cc_wrapper.sh \
+    CGO_CFLAGS='-U_FORTIFY_SOURCE --target=x86_64-unknown-linux-gnu -U_FORTIFY_SOURCE -fstack-protector -fno-omit-frame-pointer -Wthread-safety -Wself-assign --sysroot=external/+_repo_rules+bazel_sysroot_tarball/ -no-canonical-prefixes -Wno-builtin-macro-redefined -D__DATE__="redacted" -D__TIMESTAMP__="redacted" -D__TIME__="redacted"' \
+    CGO_ENABLED=1 \
+    CGO_LDFLAGS='--target=x86_64-unknown-linux-gnu -no-canonical-prefixes -lm -fuse-ld=lld -Wl,--build-id=md5 -Wl,--hash-style=gnu -Wl,-z,relro,-z,now -l:libstdc++.a --sysroot=external/+_repo_rules+bazel_sysroot_tarball/' \
+    GOARCH=amd64 \
+    GODEBUG='winsymlink=0' \
+    GOEXPERIMENT=nocoverageredesign \
+    GOOS=linux \
+    GOPATH='' \
+    GOROOT=external/rules_go++go_sdk+go_sdk \
+    GOROOT_FINAL=GOROOT \
+    GOTOOLCHAIN=local \
+    PATH=external/toolchains_llvm++llvm+llvm_toolchain/bin:/bin:/usr/bin \
+    TMPDIR=/tmp/nix-shell-369795-0 \
+    ZERO_AR_DATE=1 \
+  /home/das/.cache/bazel/_bazel_das/install/254cc618fc52f01b2b1d5fd6ff343774/linux-sandbox -t 15 -w /dev/shm -w /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/execroot/_main -w /tmp -w /tmp/nix-shell-369795-0 -M /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/_hermetic_tmp -m /tmp -S /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/stats.out -D /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/debug.out -- /bin/sh -i)
+DEBUG: Sandbox debug output for GoCompilePkg @@rules_go+//go/tools/bzltestutil/chdir:chdir:
+1748035622.198364530: src/main/tools/linux-sandbox.cc:165: calling pipe(2)...
+1748035622.198413973: src/main/tools/linux-sandbox.cc:177: Netns is 0
+1748035622.198421020: src/main/tools/linux-sandbox.cc:188: calling clone(2)...
+1748035622.198789024: src/main/tools/linux-sandbox.cc:204: linux-sandbox-pid1 has PID 2313903
+1748035622.198862567: src/main/tools/linux-sandbox-pid1.cc:681: Pid1Main started
+1748035622.198974467: src/main/tools/linux-sandbox.cc:212: done manipulating pipes
+1748035622.199095506: src/main/tools/linux-sandbox-pid1.cc:264: bind mount: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/_hermetic_tmp -> /tmp
+1748035622.199118192: src/main/tools/linux-sandbox-pid1.cc:282: writable: /dev/shm
+1748035622.199128978: src/main/tools/linux-sandbox-pid1.cc:282: writable: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/execroot/_main
+1748035622.199139474: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp
+1748035622.199146414: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp/nix-shell-369795-0
+1748035622.199153915: src/main/tools/linux-sandbox-pid1.cc:299: working dir: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/execroot/_main
+1748035622.199231111: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /
+1748035622.199240783: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev
+1748035622.199246529: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/pts
+1748035622.199251869: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035622.199257185: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/mqueue
+1748035622.199262590: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/hugepages
+1748035622.199267611: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc
+1748035622.199273150: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035622.199281059: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /proc/sys/fs/binfmt_misc, nullptr, 2101281, nullptr) failure (Operation not permitted) ignored
+1748035622.199297627: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035622.199304054: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix
+1748035622.199308464: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store
+1748035622.199314060: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc
+1748035622.199336266: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc/rpc
+1748035622.199342926: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc
+1748035622.199347386: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/bash_completion.d
+1748035622.199352096: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/cups
+1748035622.199356430: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/dbus-1
+1748035622.199360529: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-2.0
+1748035622.199364532: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-3.0
+1748035622.199368733: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/locale
+1748035622.199372827: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/man
+1748035622.199377263: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pam.d
+1748035622.199410268: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkcs11
+1748035622.199423964: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkgconfig
+1748035622.199428600: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/profile.d
+1748035622.199432707: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/systemd
+1748035622.199437025: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/X11
+1748035622.199441773: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xdg
+1748035622.199446022: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xinetd.d
+1748035622.199463002: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /usr
+1748035622.199468147: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /.host-etc
+1748035622.199494040: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /boot
+1748035622.199499398: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /build
+1748035622.199503793: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /efi
+1748035622.199508313: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home
+1748035622.199532414: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged
+1748035622.199537484: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035622.199541592: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /lost+found
+1748035622.199546275: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /opt
+1748035622.199550463: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /root
+1748035622.199555288: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run
+1748035622.199559950: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/keys
+1748035622.199566131: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-journald.service
+1748035622.199572171: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev-early.service
+1748035622.199577473: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev.service
+1748035622.199604201: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/wrappers
+1748035622.199609997: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-vconsole-setup.service
+1748035622.199614903: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup.service
+1748035622.199619738: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-sysctl.service
+1748035622.199624277: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/bpftune/cgroupv2
+1748035622.199627570: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/bpftune/cgroupv2, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035622.199630911: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/getty@tty1.service
+1748035622.199635191: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/docker/netns/18dc5a905048
+1748035622.199638406: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/docker/netns/18dc5a905048, nullptr, 4129, nullptr) failure (Permission denied) ignored
+1748035622.199641953: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000
+1748035622.199647678: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/gvfs
+1748035622.199653804: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/doc
+1748035622.199682031: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /srv
+1748035622.199687279: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys
+1748035622.199691701: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/security
+1748035622.199699435: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/cgroup
+1748035622.199705616: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/pstore
+1748035622.199710971: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/firmware/efi/efivars
+1748035622.199717826: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/bpf
+1748035622.199723111: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/debug
+1748035622.199728468: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/fuse/connections
+1748035622.199734832: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/config
+1748035622.199740209: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.199750408: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix
+1748035622.199759277: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035622.199763444: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix/X0
+1748035622.199766391: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix/X0, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035622.199782619: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /valkey_data
+1748035622.199787785: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /var
+1748035622.199792202: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.199796454: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035622.199802075: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/execroot/_main
+1748035622.199808711: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.199813186: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp/nix-shell-369795-0
+1748035622.199817815: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/execroot/_main
+1748035622.199868483: src/main/tools/linux-sandbox-pid1.cc:482: calling fork...
+1748035622.200047896: src/main/tools/linux-sandbox-pid1.cc:519: child started with PID 2
+1748035622.225452229: src/main/tools/linux-sandbox-pid1.cc:536: wait returned pid=2, status=0x00
+1748035622.225469770: src/main/tools/linux-sandbox-pid1.cc:554: child exited normally with code 0
+1748035622.226012019: src/main/tools/linux-sandbox.cc:253: child exited normally with code 0
+
+Run this command to start an interactive shell in an identical sandboxed environment:
+(exec env - \
+    CGO_ENABLED=1 \
+    GOARCH=amd64 \
+    GODEBUG='winsymlink=0' \
+    GOEXPERIMENT=nocoverageredesign \
+    GOOS=linux \
+    GOPATH='' \
+    GOROOT_FINAL=GOROOT \
+    GOTOOLCHAIN=local \
+    PATH=external/toolchains_llvm++llvm+llvm_toolchain/bin:/bin:/usr/bin \
+    TMPDIR=/tmp/nix-shell-369795-0 \
+    ZERO_AR_DATE=1 \
+  /home/das/.cache/bazel/_bazel_das/install/254cc618fc52f01b2b1d5fd6ff343774/linux-sandbox -t 15 -w /dev/shm -w /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/execroot/_main -w /tmp -w /tmp/nix-shell-369795-0 -M /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/_hermetic_tmp -m /tmp -S /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/stats.out -D /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/4/debug.out -- /bin/sh -i)
+DEBUG: Sandbox debug output for GoCompilePkg @@rules_go+//go/tools/bzltestutil:bzltestutil:
+1748035622.267653238: src/main/tools/linux-sandbox.cc:165: calling pipe(2)...
+1748035622.267694949: src/main/tools/linux-sandbox.cc:177: Netns is 0
+1748035622.267698618: src/main/tools/linux-sandbox.cc:188: calling clone(2)...
+1748035622.268105138: src/main/tools/linux-sandbox.cc:204: linux-sandbox-pid1 has PID 2313915
+1748035622.268179148: src/main/tools/linux-sandbox-pid1.cc:681: Pid1Main started
+1748035622.268324777: src/main/tools/linux-sandbox.cc:212: done manipulating pipes
+1748035622.268480339: src/main/tools/linux-sandbox-pid1.cc:264: bind mount: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/_hermetic_tmp -> /tmp
+1748035622.268512480: src/main/tools/linux-sandbox-pid1.cc:282: writable: /dev/shm
+1748035622.268524132: src/main/tools/linux-sandbox-pid1.cc:282: writable: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/execroot/_main
+1748035622.268535202: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp
+1748035622.268543151: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp/nix-shell-369795-0
+1748035622.268550979: src/main/tools/linux-sandbox-pid1.cc:299: working dir: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/execroot/_main
+1748035622.268635098: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /
+1748035622.268645241: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev
+1748035622.268651411: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/pts
+1748035622.268657058: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035622.268662844: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/mqueue
+1748035622.268668692: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/hugepages
+1748035622.268674018: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc
+1748035622.268679627: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035622.268688105: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /proc/sys/fs/binfmt_misc, nullptr, 2101281, nullptr) failure (Operation not permitted) ignored
+1748035622.268706167: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035622.268713116: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix
+1748035622.268718466: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store
+1748035622.268724424: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc
+1748035622.268748795: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc/rpc
+1748035622.268755983: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc
+1748035622.268760956: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/bash_completion.d
+1748035622.268765901: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/cups
+1748035622.268770485: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/dbus-1
+1748035622.268775144: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-2.0
+1748035622.268779573: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-3.0
+1748035622.268784006: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/locale
+1748035622.268788521: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/man
+1748035622.268793197: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pam.d
+1748035622.268813533: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkcs11
+1748035622.268818799: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkgconfig
+1748035622.268823350: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/profile.d
+1748035622.268827820: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/systemd
+1748035622.268832317: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/X11
+1748035622.268836984: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xdg
+1748035622.268841489: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xinetd.d
+1748035622.268856051: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /usr
+1748035622.268861053: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /.host-etc
+1748035622.268884359: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /boot
+1748035622.268890566: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /build
+1748035622.268895346: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /efi
+1748035622.268900126: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home
+1748035622.268924855: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged
+1748035622.268930262: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035622.268934412: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /lost+found
+1748035622.268939288: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /opt
+1748035622.268943770: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /root
+1748035622.268949022: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run
+1748035622.268954082: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/keys
+1748035622.268960319: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-journald.service
+1748035622.268966658: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev-early.service
+1748035622.268972437: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev.service
+1748035622.269000318: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/wrappers
+1748035622.269006380: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-vconsole-setup.service
+1748035622.269011746: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup.service
+1748035622.269016787: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-sysctl.service
+1748035622.269021582: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/bpftune/cgroupv2
+1748035622.269024963: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/bpftune/cgroupv2, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035622.269028646: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/getty@tty1.service
+1748035622.269033220: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/docker/netns/18dc5a905048
+1748035622.269036547: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/docker/netns/18dc5a905048, nullptr, 4129, nullptr) failure (Permission denied) ignored
+1748035622.269040305: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000
+1748035622.269046574: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/gvfs
+1748035622.269053139: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/doc
+1748035622.269082176: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /srv
+1748035622.269087852: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys
+1748035622.269092677: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/security
+1748035622.269100896: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/cgroup
+1748035622.269107722: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/pstore
+1748035622.269113435: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/firmware/efi/efivars
+1748035622.269120723: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/bpf
+1748035622.269126692: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/debug
+1748035622.269132269: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/fuse/connections
+1748035622.269139366: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/config
+1748035622.269145225: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.269157029: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix
+1748035622.269166949: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035622.269171712: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix/X0
+1748035622.269174575: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix/X0, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035622.269192625: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /valkey_data
+1748035622.269198077: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /var
+1748035622.269202822: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.269207389: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035622.269213020: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/execroot/_main
+1748035622.269220048: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.269224590: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp/nix-shell-369795-0
+1748035622.269229545: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/execroot/_main
+1748035622.269281778: src/main/tools/linux-sandbox-pid1.cc:482: calling fork...
+1748035622.269471590: src/main/tools/linux-sandbox-pid1.cc:519: child started with PID 2
+1748035622.539864591: src/main/tools/linux-sandbox-pid1.cc:536: wait returned pid=2, status=0x00
+1748035622.539884085: src/main/tools/linux-sandbox-pid1.cc:554: child exited normally with code 0
+1748035622.540459050: src/main/tools/linux-sandbox.cc:253: child exited normally with code 0
+
+Run this command to start an interactive shell in an identical sandboxed environment:
+(exec env - \
+    CGO_ENABLED=1 \
+    GOARCH=amd64 \
+    GODEBUG='winsymlink=0' \
+    GOEXPERIMENT=nocoverageredesign \
+    GOOS=linux \
+    GOPATH='' \
+    GOROOT_FINAL=GOROOT \
+    GOTOOLCHAIN=local \
+    PATH=external/toolchains_llvm++llvm+llvm_toolchain/bin:/bin:/usr/bin \
+    TMPDIR=/tmp/nix-shell-369795-0 \
+    ZERO_AR_DATE=1 \
+  /home/das/.cache/bazel/_bazel_das/install/254cc618fc52f01b2b1d5fd6ff343774/linux-sandbox -t 15 -w /dev/shm -w /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/execroot/_main -w /tmp -w /tmp/nix-shell-369795-0 -M /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/_hermetic_tmp -m /tmp -S /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/stats.out -D /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/6/debug.out -- /bin/sh -i)
+DEBUG: Sandbox debug output for GoCompilePkg //:hello_test:
+1748035622.690741521: src/main/tools/linux-sandbox.cc:165: calling pipe(2)...
+1748035622.690777990: src/main/tools/linux-sandbox.cc:177: Netns is 0
+1748035622.690781184: src/main/tools/linux-sandbox.cc:188: calling clone(2)...
+1748035622.691132978: src/main/tools/linux-sandbox.cc:204: linux-sandbox-pid1 has PID 2313929
+1748035622.691200159: src/main/tools/linux-sandbox-pid1.cc:681: Pid1Main started
+1748035622.691309191: src/main/tools/linux-sandbox.cc:212: done manipulating pipes
+1748035622.691441972: src/main/tools/linux-sandbox-pid1.cc:264: bind mount: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/_hermetic_tmp -> /tmp
+1748035622.691470713: src/main/tools/linux-sandbox-pid1.cc:282: writable: /dev/shm
+1748035622.691481314: src/main/tools/linux-sandbox-pid1.cc:282: writable: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/execroot/_main
+1748035622.691491328: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp
+1748035622.691498478: src/main/tools/linux-sandbox-pid1.cc:282: writable: /tmp/nix-shell-369795-0
+1748035622.691505550: src/main/tools/linux-sandbox-pid1.cc:299: working dir: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/execroot/_main
+1748035622.691584880: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /
+1748035622.691594343: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev
+1748035622.691599962: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/pts
+1748035622.691605141: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035622.691610418: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/mqueue
+1748035622.691615849: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /dev/hugepages
+1748035622.691621134: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc
+1748035622.691626466: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035622.691634314: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /proc/sys/fs/binfmt_misc, nullptr, 2101281, nullptr) failure (Operation not permitted) ignored
+1748035622.691651041: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /proc/sys/fs/binfmt_misc
+1748035622.691657310: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix
+1748035622.691661850: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store
+1748035622.691667402: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc
+1748035622.691690491: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /nix/store/vbrdc5wgzn0w1zdp10xd2favkjn5fk7y-glibc-2.40-66/etc/rpc
+1748035622.691696874: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc
+1748035622.691701459: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/bash_completion.d
+1748035622.691705955: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/cups
+1748035622.691710258: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/dbus-1
+1748035622.691714402: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-2.0
+1748035622.691718630: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/gtk-3.0
+1748035622.691722767: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/locale
+1748035622.691726979: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/man
+1748035622.691731243: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pam.d
+1748035622.691751354: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkcs11
+1748035622.691756286: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/pkgconfig
+1748035622.691760416: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/profile.d
+1748035622.691764552: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/systemd
+1748035622.691768783: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/X11
+1748035622.691773241: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xdg
+1748035622.691777376: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /etc/xinetd.d
+1748035622.691790756: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /usr
+1748035622.691795299: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /.host-etc
+1748035622.691816542: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /boot
+1748035622.691821577: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /build
+1748035622.691826136: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /efi
+1748035622.691830682: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home
+1748035622.691854956: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged
+1748035622.691859537: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /home/das/docker/overlay2/31eac87b0c377782a7dad868ae73a99d338cc16027d04a3a9f5de65e481b709b/merged, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035622.691863508: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /lost+found
+1748035622.691868151: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /opt
+1748035622.691872368: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /root
+1748035622.691877189: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run
+1748035622.691881703: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/keys
+1748035622.691887233: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-journald.service
+1748035622.691893284: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev-early.service
+1748035622.691898675: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup-dev.service
+1748035622.691924946: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/wrappers
+1748035622.691930578: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-vconsole-setup.service
+1748035622.691935773: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-tmpfiles-setup.service
+1748035622.691940547: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/systemd-sysctl.service
+1748035622.691945056: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/bpftune/cgroupv2
+1748035622.691948334: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/bpftune/cgroupv2, nullptr, 2101281, nullptr) failure (Permission denied) ignored
+1748035622.691951680: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/credentials/getty@tty1.service
+1748035622.691955776: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/docker/netns/18dc5a905048
+1748035622.691958792: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /run/docker/netns/18dc5a905048, nullptr, 4129, nullptr) failure (Permission denied) ignored
+1748035622.691962373: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000
+1748035622.691968304: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/gvfs
+1748035622.691974023: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /run/user/1000/doc
+1748035622.692001882: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /srv
+1748035622.692006964: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys
+1748035622.692011573: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/security
+1748035622.692019142: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/cgroup
+1748035622.692025144: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/pstore
+1748035622.692030713: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/firmware/efi/efivars
+1748035622.692037786: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/bpf
+1748035622.692042890: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/debug
+1748035622.692048055: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/fs/fuse/connections
+1748035622.692054496: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /sys/kernel/config
+1748035622.692059983: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.692070165: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix
+1748035622.692078772: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035622.692082858: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /tmp/.X11-unix/X0
+1748035622.692085715: src/main/tools/linux-sandbox-pid1.cc:395: remount(nullptr, /tmp/.X11-unix/X0, nullptr, 2101287, nullptr) failure (No such file or directory) ignored
+1748035622.692101598: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /valkey_data
+1748035622.692106526: src/main/tools/linux-sandbox-pid1.cc:373: remount ro: /var
+1748035622.692110868: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.692115065: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /dev/shm
+1748035622.692120440: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/execroot/_main
+1748035622.692126944: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp
+1748035622.692131324: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /tmp/nix-shell-369795-0
+1748035622.692136160: src/main/tools/linux-sandbox-pid1.cc:373: remount rw: /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/execroot/_main
+1748035622.692186036: src/main/tools/linux-sandbox-pid1.cc:482: calling fork...
+1748035622.692346063: src/main/tools/linux-sandbox-pid1.cc:519: child started with PID 2
+1748035622.697758670: src/main/tools/linux-sandbox-pid1.cc:536: wait returned pid=2, status=0x100
+1748035622.697773434: src/main/tools/linux-sandbox-pid1.cc:554: child exited normally with code 1
+1748035622.698476280: src/main/tools/linux-sandbox.cc:253: child exited normally with code 1
+
+Run this command to start an interactive shell in an identical sandboxed environment:
+(exec env - \
+    CC=external/toolchains_llvm++llvm+llvm_toolchain/bin/cc_wrapper.sh \
+    CGO_ENABLED=1 \
+    GOARCH=amd64 \
+    GODEBUG='winsymlink=0' \
+    GOEXPERIMENT=nocoverageredesign \
+    GOOS=linux \
+    GOPATH='' \
+    GOROOT=bazel-out/k8-fastbuild-ST-bf922961484a/bin/external/rules_go+/stdlib_ \
+    GOROOT_FINAL=GOROOT \
+    GOTOOLCHAIN=local \
+    PATH=external/toolchains_llvm++llvm+llvm_toolchain/bin:/bin:/usr/bin \
+    TMPDIR=/tmp/nix-shell-369795-0 \
+    ZERO_AR_DATE=1 \
+  /home/das/.cache/bazel/_bazel_das/install/254cc618fc52f01b2b1d5fd6ff343774/linux-sandbox -t 15 -w /dev/shm -w /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/execroot/_main -w /tmp -w /tmp/nix-shell-369795-0 -M /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/_hermetic_tmp -m /tmp -S /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/stats.out -D /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/debug.out -- /bin/sh -i)
+ERROR: /home/das/Downloads/go_hello_world_race/BUILD.bazel:29:8: GoCompilePkg hello_test.internal.a failed: (Exit 1): linux-sandbox failed: error executing GoCompilePkg command
+  (cd /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/execroot/_main && \
+  exec env - \
+    CC=external/toolchains_llvm++llvm+llvm_toolchain/bin/cc_wrapper.sh \
+    CGO_ENABLED=1 \
+    GOARCH=amd64 \
+    GODEBUG='winsymlink=0' \
+    GOEXPERIMENT=nocoverageredesign \
+    GOOS=linux \
+    GOPATH='' \
+    GOROOT=bazel-out/k8-fastbuild-ST-bf922961484a/bin/external/rules_go+/stdlib_ \
+    GOROOT_FINAL=GOROOT \
+    GOTOOLCHAIN=local \
+    PATH=external/toolchains_llvm++llvm+llvm_toolchain/bin:/bin:/usr/bin \
+    TMPDIR=/tmp/nix-shell-369795-0 \
+    ZERO_AR_DATE=1 \
+  /home/das/.cache/bazel/_bazel_das/install/254cc618fc52f01b2b1d5fd6ff343774/linux-sandbox -t 15 -w /dev/shm -w /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/execroot/_main -w /tmp -w /tmp/nix-shell-369795-0 -M /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/_hermetic_tmp -m /tmp -S /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/stats.out -D /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/5/debug.out -- bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_go++go_sdk+go_sdk/builder_reset/builder compilepkg -sdk external/rules_go++go_sdk+go_sdk -goroot bazel-out/k8-fastbuild-ST-bf922961484a/bin/external/rules_go+/stdlib_ -installsuffix linux_amd64_race -tags race -src hello.go -src hello_test.go -importpath example.com/hello -p example.com/hello -package_list bazel-out/k8-opt-exec-ST-d57f47055a04/bin/external/rules_go++go_sdk+go_sdk/packages.txt -testfilter exclude -embedroot '' -embedroot bazel-out/k8-fastbuild/bin -embedlookupdir . -embedlookupdir '' -lo bazel-out/k8-fastbuild/bin/hello_test.internal.a -o bazel-out/k8-fastbuild/bin/hello_test.internal.x -gcflags -race -cgo_go_srcs bazel-out/k8-fastbuild/bin/hello_test_/hello_test.internal.a.cgo -cppflags '-iquote . -iquote bazel-out/k8-fastbuild/bin -isystem @bazel_sysroot_tarball/:sysroot/include -isystem bazel-out/k8-fastbuild/bin/@bazel_sysroot_tarball/:sysroot/include' -cflags '-U_FORTIFY_SOURCE --target=x86_64-unknown-linux-gnu -U_FORTIFY_SOURCE -fstack-protector -fno-omit-frame-pointer -Wthread-safety -Wself-assign --sysroot=external/+_repo_rules+bazel_sysroot_tarball/ -no-canonical-prefixes -Wno-builtin-macro-redefined -D__DATE__="redacted" -D__TIMESTAMP__="redacted" -D__TIME__="redacted" -fPIC' -cxxflags '-U_FORTIFY_SOURCE --target=x86_64-unknown-linux-gnu -U_FORTIFY_SOURCE -fstack-protector -fno-omit-frame-pointer -Wthread-safety -Wself-assign -std=c++17 -stdlib=libstdc++ --sysroot=external/+_repo_rules+bazel_sysroot_tarball/ -no-canonical-prefixes -Wno-builtin-macro-redefined -D__DATE__="redacted" -D__TIMESTAMP__="redacted" -D__TIME__="redacted" -fPIC' -objcflags '-U_FORTIFY_SOURCE --target=x86_64-unknown-linux-gnu -U_FORTIFY_SOURCE -fstack-protector -fno-omit-frame-pointer -Wthread-safety -Wself-assign --sysroot=external/+_repo_rules+bazel_sysroot_tarball/ -no-canonical-prefixes -Wno-builtin-macro-redefined -D__DATE__="redacted" -D__TIMESTAMP__="redacted" -D__TIME__="redacted" -fPIC' -objcxxflags '-U_FORTIFY_SOURCE --target=x86_64-unknown-linux-gnu -U_FORTIFY_SOURCE -fstack-protector -fno-omit-frame-pointer -Wthread-safety -Wself-assign -std=c++17 -stdlib=libstdc++ --sysroot=external/+_repo_rules+bazel_sysroot_tarball/ -no-canonical-prefixes -Wno-builtin-macro-redefined -D__DATE__="redacted" -D__TIMESTAMP__="redacted" -D__TIME__="redacted" -fPIC' -ldflags '--target=x86_64-unknown-linux-gnu -no-canonical-prefixes -lm -fuse-ld=lld -Wl,--build-id=md5 -Wl,--hash-style=gnu -Wl,-z,relro,-z,now -l:libstdc++.a --sysroot=external/+_repo_rules+bazel_sysroot_tarball/')
+2025/05/23 14:27:02 open bazel_sysroot_tarball/:sysroot/include: no such file or directory
+compilepkg: error running subcommand external/rules_go++go_sdk+go_sdk/pkg/tool/linux_amd64/cgo: exit status 1
+Target //:hello_test failed to build
+INFO: Elapsed time: 414.720s, Critical Path: 54.67s
+INFO: 16 processes: 11 internal, 5 linux-sandbox.
+ERROR: Build did NOT complete successfully
+//:hello_test                                                   FAILED TO BUILD
+
+Executed 0 out of 1 test: 1 fails to build.
+make: *** [Makefile:23: test_local] Error 1
+
+[nix-shell:~/Downloads/go_hello_world_race]$

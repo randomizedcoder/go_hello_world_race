@@ -1,0 +1,106 @@
+#
+# BUILD.bazel
+#
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+load("@rules_cc//cc:defs.bzl", "cc_library")
+
+cc_library(
+    name = "system_deps",
+    srcs = ["@bazel_sysroot_tarball//:lib/libxml2.so.2"],
+    includes = ["@bazel_sysroot_tarball//:include"],
+    linkstatic = 0,
+    linkopts = [
+        "-L@bazel_sysroot_tarball//:lib",
+        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_tarball/lib",
+        "-Wl,--no-as-needed",
+        "-lxml2",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+go_library(
+    name = "hello_lib",
+    srcs = ["hello.go"],
+    importpath = "github.com/das/go_hello_world_race",
+)
+
+go_binary(
+    name = "hello_bin",
+    srcs = ["hello.go"],
+    deps = [":hello_lib"],
+)
+
+genrule(
+    name = "libxml2_env",
+    outs = ["libxml2_env.sh"],
+    cmd = """
+    echo '#!/bin/bash' > $@
+    echo 'export LD_LIBRARY_PATH=$$(dirname $$(find external -name libxml2.so.2))' >> $@
+    chmod +x $@
+    """,
+)
+
+go_test(
+    name = "hello_test",
+    srcs = ["hello_test.go"],
+    embed = [":hello_lib"],
+    cgo = True,
+    cdeps = [":system_deps"],
+    data = ["@bazel_sysroot_tarball//:all"],
+    impure_env = {
+        "LD_LIBRARY_PATH": "external/bazel_sysroot_tarball/lib",
+    },
+    clinkopts = [
+        "-L@bazel_sysroot_tarball//:lib",
+        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_tarball/lib",
+        "-Wl,--no-as-needed",
+        "-lxml2",
+    ],
+)
+
+platform(
+    name = "linux_x86_64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "go_hello_world_race_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/das/go_hello_world_race",
+)
+
+go_binary(
+    name = "go_hello_world_race",
+    srcs = ["main.go"],
+    deps = [
+        ":go_hello_world_race_lib",
+    ],
+)
+
+go_test(
+    name = "go_hello_world_race_test",
+    srcs = ["main_test.go"],
+    deps = [
+        ":go_hello_world_race_lib",
+    ],
+    cgo = True,
+    static = "on",
+)
+
+# end
