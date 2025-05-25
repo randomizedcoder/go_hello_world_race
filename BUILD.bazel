@@ -7,40 +7,56 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 
 cc_library(
     name = "system_deps",
-    includes = ["external/+_repo_rules+bazel_sysroot_tarball/include"],
+    srcs = ["@bazel_sysroot_tarball//:lib/libxml2.so.2"],
+    includes = ["@bazel_sysroot_tarball//:include"],
+    linkstatic = 0,
     linkopts = [
-        "-Lexternal/+_repo_rules+bazel_sysroot_tarball/lib",
-        "-Wl,-rpath,external/+_repo_rules+bazel_sysroot_tarball/lib",
+        "-L@bazel_sysroot_tarball//:lib",
+        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_tarball/lib",
         "-Wl,--no-as-needed",
         "-lxml2",
     ],
     visibility = ["//visibility:public"],
-    data = ["@bazel_sysroot_tarball//:all"],
 )
 
 go_library(
     name = "hello_lib",
     srcs = ["hello.go"],
-    importpath = "example.com/hello",
-    visibility = ["//visibility:private"],
-    cdeps = [":system_deps"],
-    cgo = True,
-    data = ["@bazel_sysroot_tarball//:all"],
+    importpath = "github.com/das/go_hello_world_race",
 )
 
 go_binary(
-    name = "hello",
-    embed = [":hello_lib"],
-    visibility = ["//visibility:public"],
+    name = "hello_bin",
+    srcs = ["hello.go"],
+    deps = [":hello_lib"],
+)
+
+genrule(
+    name = "libxml2_env",
+    outs = ["libxml2_env.sh"],
+    cmd = """
+    echo '#!/bin/bash' > $@
+    echo 'export LD_LIBRARY_PATH=$$(dirname $$(find external -name libxml2.so.2))' >> $@
+    chmod +x $@
+    """,
 )
 
 go_test(
     name = "hello_test",
     srcs = ["hello_test.go"],
     embed = [":hello_lib"],
-    pure = "off",
-    race = "on",
+    cgo = True,
+    cdeps = [":system_deps"],
     data = ["@bazel_sysroot_tarball//:all"],
+    impure_env = {
+        "LD_LIBRARY_PATH": "external/bazel_sysroot_tarball/lib",
+    },
+    clinkopts = [
+        "-L@bazel_sysroot_tarball//:lib",
+        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_tarball/lib",
+        "-Wl,--no-as-needed",
+        "-lxml2",
+    ],
 )
 
 platform(
@@ -59,6 +75,32 @@ platform(
         "@platforms//cpu:arm64",
     ],
     visibility = ["//visibility:public"],
+)
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "go_hello_world_race_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/das/go_hello_world_race",
+)
+
+go_binary(
+    name = "go_hello_world_race",
+    srcs = ["main.go"],
+    deps = [
+        ":go_hello_world_race_lib",
+    ],
+)
+
+go_test(
+    name = "go_hello_world_race_test",
+    srcs = ["main_test.go"],
+    deps = [
+        ":go_hello_world_race_lib",
+    ],
+    cgo = True,
+    static = "on",
 )
 
 # end

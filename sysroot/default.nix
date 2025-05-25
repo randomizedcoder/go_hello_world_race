@@ -84,6 +84,10 @@ pkgs.runCommand "sysroot" {
   echo "Copying libxml2 libraries..."
   cp -Lr ${pkgs.libxml2.out}/lib/* $out/sysroot/lib/ || true
 
+  # Create proper symlinks for libxml2
+  ln -sf libxml2.so.2 $out/sysroot/lib/libxml2.so
+  ln -sf libxml2.so.2 $out/sysroot/lib/libxml2.so.2.9.12
+
   echo "Copying libffi libraries..."
   cp -Lr ${pkgs.libffi.out}/lib/* $out/sysroot/lib/ || true
 

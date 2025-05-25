@@ -5,17 +5,17 @@
 #
 
 # Add sysroot and toolchain lib directories to library path
-export LD_LIBRARY_PATH="$PWD/external/+_repo_rules+bazel_sysroot_tarball/lib:$PWD/external/toolchains_llvm++llvm+llvm_toolchain_llvm/lib:$LD_LIBRARY_PATH"
+export LD_LIBRARY_PATH="$$ORIGIN/../../external/+_repo_rules+bazel_sysroot_tarball/lib:$$ORIGIN/../../external/toolchains_llvm++llvm+llvm_toolchain_llvm/lib:$LD_LIBRARY_PATH"
 
 exec clang \
   -Wno-error=unused-command-line-argument \
-  -isystem "$PWD/external/+_repo_rules+bazel_sysroot_tarball/include" \
-  -L"$PWD/external/+_repo_rules+bazel_sysroot_tarball/lib" \
-  -Wl,-rpath,"$PWD/external/+_repo_rules+bazel_sysroot_tarball/lib" \
+  -isystem "$$ORIGIN/../../external/+_repo_rules+bazel_sysroot_tarball/include" \
+  -L"$$ORIGIN/../../external/+_repo_rules+bazel_sysroot_tarball/lib" \
+  -Wl,-rpath,"$$ORIGIN/../../external/+_repo_rules+bazel_sysroot_tarball/lib" \
   -Wl,--no-as-needed \
-  -Wl,--whole-archive \
   -lxml2 \
-  -Wl,--no-whole-archive \
+  -fuse-ld=lld \
+  -Wl,-v \
   "$@"
 
 # end

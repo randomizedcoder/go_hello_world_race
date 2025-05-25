@@ -1,6 +1,7 @@
 #
 # .bazelrc
 #
+# https://bazel.build/docs/user-manual#strategy-options
 
 common --enable_bzlmod=true
 #common --noenable_bzlmod
@@ -36,7 +37,7 @@ try-import .bazelrc.generated
 build:race --features=race
 build:race --@io_bazel_rules_go//go/config:race
 
-build:local-sysroot --action_env=PATH=$PWD/result/bin
+build:local-sysroot --action_env=PATH=$PWD/result/bin:/bin:/usr/bin
 build:local-sysroot --action_env=CPATH=$PWD/result/include
 build:local-sysroot --action_env=LIBRARY_PATH=$PWD/result/lib
 build:local-sysroot --action_env=CGO_ENABLED=1
@@ -44,15 +45,18 @@ build:local-sysroot --action_env=CGO_ENABLED=1
 build:local-sysroot --action_env=CGO_CFLAGS="-I$PWD/result/include"
 build:local-sysroot --action_env=CGO_LDFLAGS="-L$PWD/result/lib"
 build:local-sysroot --action_env=CC=$PWD/cc_wrapper.sh
-build:local-sysroot --action_env=LD_LIBRARY_PATH=$PWD/external/+_repo_rules+bazel_sysroot_tarball/lib
+build:local-sysroot --action_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysroot_tarball/lib
 
 # build:local-sysroot --repo_env=CC=$PWD/cc_wrapper.sh
 #build:local-sysroot --repo_env=CC=/usr/bin/false
+build:local-sysroot --repo_env=PATH=$PWD/result/bin:/bin:/usr/bin
 build:local-sysroot --repo_env=CPATH=$PWD/result/include
 build:local-sysroot --repo_env=LIBRARY_PATH=$PWD/result/lib
 build:local-sysroot --repo_env=CGO_CFLAGS="-I$PWD/result/include"
 build:local-sysroot --repo_env=CGO_LDFLAGS="-L$PWD/result/lib"
-build:local-sysroot --repo_env=LD_LIBRARY_PATH=$PWD/external/+_repo_rules+bazel_sysroot_tarball/lib
+build:local-sysroot --repo_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysroot_tarball/lib
+
+build:local-sysroot --test_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysroot_tarball/lib
 
 #build:local-sysroot --extra_toolchains=@toolchains_llvm//:all
 #build:local-sysroot --host_toolchain=@toolchains_llvm//:cc-toolchain-x86_64-default

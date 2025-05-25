@@ -50,3 +50,45 @@ https://steven.casagrande.io/posts/2024/sysroot-generation-toolchains-llvm/
 
 Another nice blog
 https://ltekieli.github.io/cross-compiling-with-bazel/
+
+
+https://fzakaria.com/2025/02/26/nix-pragmatism-nix-ld-and-envfs
+
+
+```
+[das@t:~/Downloads/go_hello_world_race]$ find /home/das/.cache/bazel/_bazel_das/ -name 'libxml2.so.2'
+find: ‘/home/das/.cache/bazel/_bazel_das/0cd5ed571ab210acf3127e673613e371/sandbox/inaccessibleHelperDir’: Permission denied
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/+_repo_rules+bazel_sysroot_tarball/lib/libxml2.so.2
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/execroot/_main/bazel-out/k8-fastbuild/bin/hello_test_/hello_test.runfiles/_main/_solib_k8/_U_S_S_Csystem_Udeps___Uexternal_S+_Urepo_Urules+bazel_Usysroot_Utarball_Slib/libxml2.so.2
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/execroot/_main/bazel-out/k8-fastbuild/bin/hello_test_/hello_test.runfiles/+_repo_rules+bazel_sysroot_tarball/lib/libxml2.so.2
+find: ‘/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/inaccessibleHelperDir’: Permission denied
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/7/execroot/_main/external/+_repo_rules+bazel_sysroot_tarball/lib/libxml2.so.2
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/10/execroot/_main/external/+_repo_rules+bazel_sysroot_tarball/lib/libxml2.so.2
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/3/execroot/_main/external/+_repo_rules+bazel_sysroot_tarball/lib/libxml2.so.2
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/9/execroot/_main/external/+_repo_rules+bazel_sysroot_tarball/lib/libxml2.so.2
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/linux-sandbox/11/execroot/_main/external/+_repo_rules+bazel_sysroot_tarball/lib/libxml2.so.2
+
+[das@t:~/Downloads/go_hello_world_race]$
+```
+
+```
+[das@t:~/Downloads/go_hello_world_race]$ find /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/toolchains_llvm++llvm+llvm_toolchain_llvm/ > find_llvm_toolchain_llvm
+
+[das@t:~/Downloads/go_hello_world_race]$ ls -la /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/toolchains_llvm++llvm+llvm_toolchain_llvm/bin/ld.lld
+lrwxrwxrwx 1 das users 3 May 24 15:17 /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/toolchains_llvm++llvm+llvm_toolchain_llvm/bin/ld.lld -> lld
+
+[das@t:~/Downloads/go_hello_world_race]$ ls -la /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/toolchains_llvm++llvm+llvm_toolchain_llvm/bin/lld
+-rwxr-xr-x 1 das users 190332448 Apr  2 01:03 /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/toolchains_llvm++llvm+llvm_toolchain_llvm/bin/lld
+```
+
+
+```
+By testing from inside the sandbox, if I can set the LD_LIBRARY_PATH, then ld.lld works, and can link to libxml2.so.2 which I'm providing via the sysroot
+LD_LIBRARY_PATH=/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/+_repo_rules+bazel_sysroot_tarball/lib /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/toolchains_llvm++llvm+llvm_toolchain_llvm/bin/lld --version
+Results in
+LD_LIBRARY_PATH=/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/+_repo_rules+bazel_sysroot_tarball/lib /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/external/toolchains_llvm++llvm+llvm_toolchain_llvm/bin/lld --version
+lld is a generic driver.
+Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly) instead
+However, I have no idea how to get Bazel to set the LD_LIBARY_PATH. e.g. This doesn't work
+build:local-sysroot --test_env=LD_LIBRARY_PATH=$$ORIGIN/../../external/+_repo_rules+bazel_sysroot_tarball/lib
+```
