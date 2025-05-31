@@ -92,3 +92,35 @@ Invoke ld.lld (Unix), ld64.lld (macOS), lld-link (Windows), wasm-ld (WebAssembly
 However, I have no idea how to get Bazel to set the LD_LIBARY_PATH. e.g. This doesn't work
 build:local-sysroot --test_env=LD_LIBRARY_PATH=$$ORIGIN/../../external/+_repo_rules+bazel_sysroot_tarball/lib
 ```
+
+## dzbarsky/static-clang
+
+While looking for how to use
+https://github.com/dzbarsky/static-clang
+
+This is possibly the best example I can find for using dzbarsky/static-clang
+https://github.com/malt3/sysroots/blob/main/example/MODULE.bazel#L21
+
+Another example here, although older llvm version:
+https://github.com/aspect-build/rules_py/blob/main/WORKSPACE#L65
+
+Multiple bazelbuild example mention dzbarsky/static-clang, but don't actually use it. ? Curious
+https://github.com/bazelbuild/examples/blob/main/rust-examples/09-oci-container/MODULE.bazel#L18
+
+This looks pretty interesting.  Anyone using it successfully? Sounds pretty awesome
+https://github.com/cerisier/toolchains_llvm_bootstrapped
+
+
+# Sysroots created by Nix
+
+bazel_sysroot_library
+bazel_sysroot_lib_amd64
+bazel_sysroot_lib_arm64
+bazel_sysroot_llvm_amd64
+bazel_sysroot_llvm_arm64
+
+git clone https://github.com/randomizedcoder/bazel_sysroot_library.git & \
+git clone https://github.com/randomizedcoder/bazel_sysroot_lib_amd64.git & \
+git clone https://github.com/randomizedcoder/bazel_sysroot_lib_arm64.git & \
+git clone https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64.git & \
+git clone https://github.com/randomizedcoder/bazel_sysroot_llvm_arm64.git

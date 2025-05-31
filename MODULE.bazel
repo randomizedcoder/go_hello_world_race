@@ -11,19 +11,20 @@ module(
 
 #bazel_dep(name = "rules_coreutils", version = "1.0.1") # https://github.com/bazelbuild/rules_coreutils/tags
 
-bazel_dep(name = "rules_go",version = "0.54.1")
+bazel_dep(name = "rules_go", version = "0.54.1")
 # local_path_override(
 #     module_name = "rules_go",
 #     path = "../../bazelbuild/rules_go-bzlmod"
 # )
+# Rules go uses gomaxprocs=1: https://github.com/golang/go/issues/48497
 
-# Override rules_go to use our forked version that supports impure_env
-archive_override(
-    module_name = "rules_go",
-    urls = ["https://github.com/randomizedcoder/rules_go/archive/refs/heads/ld_library_path.zip"],
-    strip_prefix = "rules_go-ld_library_path",
-    integrity = "sha256-R+a3OiKs5ib8pdjsJVDPvb9GgW3yWRXEzkGci9xgspk=",
-)
+# # Override rules_go to use our forked version that supports impure_env
+# archive_override(
+#     module_name = "rules_go",
+#     urls = ["https://github.com/randomizedcoder/rules_go/archive/refs/heads/ld_library_path.zip"],
+#     strip_prefix = "rules_go-ld_library_path",
+#     integrity = "sha256-R+a3OiKs5ib8pdjsJVDPvb9GgW3yWRXEzkGci9xgspk=",
+# )
 
 bazel_dep(name = "gazelle", version = "0.43.0")
 
@@ -41,53 +42,48 @@ bazel_dep(name = "libxml2", version = "2.13.5")  # https://registry.bazel.build/
 # don't use libxml2-go = https://github.com/lestrrat-go/libxml2
 #bazel_dep(name = "libxml2-go", version = "0.0.0-20250331-c934e3f")  # https://registry.bazel.build/modules/libxml2-go
 
-# LLVM toolchain setup - using local mirror
-# Original: bazel_dep(name = "toolchains_llvm", version = "1.4.0")  # https://github.com/bazel-contrib/toolchains_llvm/tags
-bazel_dep(name = "toolchains_llvm", version = "1.4.0", repo_name = "toolchains_llvm")
-
 # Sysroot setup
 http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+# Common library sysroot (headers)
 http_archive(
-    name = "bazel_sysroot_tarball",
-    urls = ["https://github.com/randomizedcoder/bazel_remote_runner_sysroot/archive/3cacd6d865876e9cfdc010c3922275ee94c7f889.tar.gz"],
-    sha256 = "24b417ba6c1de618cbc01ac4910f7f14554d0f8722994a07dfd414ee0386bc10",
-    strip_prefix = "bazel_remote_runner_sysroot-3cacd6d865876e9cfdc010c3922275ee94c7f889/sysroot",
+    name = "bazel_sysroot_library",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_library/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "bazel_sysroot_library-main/sysroot",
     build_file = "//:sysroot.BUILD",
 )
 
-# Define LLVM versions for different platforms
-# newest version available as of 2025-05-13
-LLVM_VERSIONS = {
-    "": "20.1.2",  # Default version
-    "linux-x86_64": "20.1.2",
-    "linux-aarch64": "20.1.2",
-}
-
-# Load the LLVM extension after the repository is set up
-llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
-
-llvm.toolchain(
-    name = "llvm_toolchain",
-    llvm_versions = LLVM_VERSIONS,
-    stdlib = {
-        "linux-x86_64": "stdc++",
-        "linux-aarch64": "stdc++",
-    }
+# Architecture-specific sysroots (libraries)
+http_archive(
+    name = "bazel_sysroot_lib_amd64",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_lib_amd64/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "bazel_sysroot_lib_amd64-main/sysroot",
+    build_file = "//:sysroot.BUILD",
 )
 
-# Configure sysroot
-llvm.sysroot(
-    name = "llvm_toolchain",
-    targets = ["linux-x86_64"],
-    label = "@bazel_sysroot_tarball//:all",
+http_archive(
+    name = "bazel_sysroot_lib_arm64",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_lib_arm64/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "bazel_sysroot_lib_arm64-main/sysroot",
+    build_file = "//:sysroot.BUILD",
 )
 
-use_repo(llvm, "llvm_toolchain")
+# LLVM toolchain setup
+http_archive(
+    name = "bazel_sysroot_llvm_amd64",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "bazel_sysroot_llvm_amd64-main/sysroot",
+    build_file = "//:sysroot.BUILD",
+)
 
-#register_toolchains("@llvm_toolchain//:all")
-register_toolchains("@llvm_toolchain//:all", dev_dependency = True)
+http_archive(
+    name = "bazel_sysroot_llvm_arm64",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_arm64/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "bazel_sysroot_llvm_arm64-main/sysroot",
+    build_file = "//:sysroot.BUILD",
+)
 
-# Go SDK setup (this needs to come after rules_go is set up)
+# Go SDK setup
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(
     name = "go_sdk",

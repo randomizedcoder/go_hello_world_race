@@ -32,9 +32,13 @@ help:
 	@echo "  nix_copy_bazelrc_generated   - Copy generated bazelrc"
 	@echo ""
 	@echo "Sysroot targets:"
-	@echo "  nix_create_sysroot     - Create sysroot"
-	@echo "  nix_copy_sysroot_tarball - Copy sysroot to remote"
-	@echo "  inspect_tar            - Inspect sysroot tarball contents"
+	@echo "  nix_create_sysroot_all    - Create sysroots for all architectures"
+	@echo "  nix_create_sysroot_amd64  - Create sysroot for amd64"
+	@echo "  nix_create_sysroot_arm64  - Create sysroot for arm64"
+	@echo "  nix_create_sysroot_darwin_amd64 - Create sysroot for darwin-amd64"
+	@echo "  nix_create_sysroot_darwin_arm64 - Create sysroot for darwin-arm64"
+	@echo "  nix_copy_sysroot_tarball  - Copy sysroot to remote"
+	@echo "  inspect_tar               - Inspect sysroot tarball contents"
 
 # Bazel targets
 .PHONY: bazel-clean bazel-expunge bazel-sync
@@ -79,17 +83,48 @@ nix_copy_bazelrc_generated:
 	cat .bazelrc.generated
 
 # Sysroot targets
-.PHONY: nix_create_sysroot nix_copy_sysroot_tarball inspect_tar
-nix_create_sysroot:
-	nix build .#sysroot
+.PHONY: nix_create_sysroot_all nix_create_sysroot_amd64 nix_create_sysroot_arm64 nix_create_sysroot_darwin_amd64 nix_create_sysroot_darwin_arm64 nix_copy_sysroot_tarball inspect_tar
+
+# Build all sysroots
+nix_create_sysroot_all: nix_create_sysroot_amd64 nix_create_sysroot_arm64
+
+# Build individual sysroots
+nix_create_sysroot_amd64:
+	nix build .#sysroot-library -o sysroot-library
+	nix build .#sysroot-lib-amd64 -o sysroot-lib-amd64
+	@echo "Built amd64 sysroot components"
+
+nix_create_sysroot_arm64:
+	nix build .#sysroot-library -o sysroot-library
+	nix build .#sysroot-lib-arm64 -o sysroot-lib-arm64
+	@echo "Built arm64 sysroot components"
+
+# Copy sysroot tarballs to remote
 nix_copy_sysroot_tarball:
-	scp result/sysroot.tar.gz hp4:
+	scp sysroot-library/sysroot-library.tar.gz hp4:sysroot-library.tar.gz
+	scp sysroot-lib-amd64/sysroot-lib.tar.gz hp4:sysroot-lib-amd64.tar.gz
+	scp sysroot-lib-arm64/sysroot-lib.tar.gz hp4:sysroot-lib-arm64.tar.gz
+
+# Inspect tarball contents
 inspect_tar:
-	tar -ztvf ./result/sysroot.tar.gz
+	@echo "Inspecting library sysroot:"
+	tar -ztvf ./sysroot-library/sysroot-library.tar.gz
+	@echo "\nInspecting amd64 lib sysroot:"
+	tar -ztvf ./sysroot-lib-amd64/sysroot-lib.tar.gz
+	@echo "\nInspecting arm64 lib sysroot:"
+	tar -ztvf ./sysroot-lib-arm64/sysroot-lib.tar.gz
 
+# Rsync targets for each architecture
+.PHONY: rsync_all rsync_amd64 rsync_arm64
 
-rsync:
-	rsync -av ./result/sysroot/ ../bazel_remote_runner_sysroot/sysroot/
+rsync_all: rsync_amd64 rsync_arm64
 
+rsync_amd64:
+	rsync -av ./sysroot-library/sysroot/library/ ../bazel_remote_runner_sysroot/sysroot/library/
+	rsync -av ./sysroot-lib-amd64/sysroot/amd64/ ../bazel_remote_runner_sysroot/sysroot/amd64/
+
+rsync_arm64:
+	rsync -av ./sysroot-library/sysroot/library/ ../bazel_remote_runner_sysroot/sysroot/library/
+	rsync -av ./sysroot-lib-arm64/sysroot/arm64/ ../bazel_remote_runner_sysroot/sysroot/arm64/
 
 # end
