@@ -3,11 +3,14 @@
 #
 # https://bazel.build/docs/user-manual#strategy-options
 
+# Enable Bzlmod
 common --enable_bzlmod=true
-#common --noenable_bzlmod
 
 # Disable WORKSPACE file
 common --noenable_workspace
+
+# Disable direct dependency checks
+common --check_direct_dependencies=off
 
 # Configuration for using Buildbarn on hp4.home
 # Use 'build:hp4' to apply these flags to the build command when --config=hp4 is used
@@ -34,6 +37,7 @@ build:hp4 --shell_executable='/home/nobody/bash.wrapper'
 # go-with-sysroot/bin/cc wrapper
 try-import .bazelrc.generated
 
+# Race detection
 build:race --features=race
 build:race --@io_bazel_rules_go//go/config:race
 
@@ -58,25 +62,16 @@ build:local-sysroot --repo_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysro
 
 build:local-sysroot --test_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysroot_tarball/lib
 
-#build:local-sysroot --extra_toolchains=@toolchains_llvm//:all
-#build:local-sysroot --host_toolchain=@toolchains_llvm//:cc-toolchain-x86_64-default
-#build:local-sysroot --crosstool_top=@toolchains_llvm//:toolchain
-build:local-sysroot --repo_env=CC=$PWD/cc_wrapper.sh
-build:local-sysroot --action_env=CC=$PWD/cc_wrapper.sh
-
-# build --host_platform=@platforms//os:linux
-# build --platforms=@platforms//os:linux
-# build --host_platform=@bazel_tools//platforms:host_platform
-# build --platforms=@bazel_tools//platforms:host_platform
-
+# Platform configurations
 build:x86_64 --platforms=//:linux_x86_64
-build:arm64 --platforms=//:linux_arm64
+build:x86_64 --extra_toolchains=//:llvm_toolchain_suite
+build:x86_64 --host_platform=//:linux_x86_64
 
 build:arm64 --platforms=//:linux_arm64
+build:arm64 --extra_toolchains=//:llvm_toolchain_suite
+build:arm64 --host_platform=//:linux_arm64
 
-#build --extra_toolchains=@toolchains_llvm//:all
-#build --crosstool_top=@toolchains_llvm//:toolchain
-#build --noincompatible_enable_cc_toolchain_resolution
-#build --cpu=local
+# Common build settings
+build --incompatible_enable_cc_toolchain_resolution
 
 # end

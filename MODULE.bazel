@@ -11,7 +11,7 @@ module(
 
 #bazel_dep(name = "rules_coreutils", version = "1.0.1") # https://github.com/bazelbuild/rules_coreutils/tags
 
-bazel_dep(name = "rules_go", version = "0.54.1")
+bazel_dep(name = "rules_go", version = "0.54.1")  # https://github.com/bazel-contrib/rules_go/tags
 # local_path_override(
 #     module_name = "rules_go",
 #     path = "../../bazelbuild/rules_go-bzlmod"
@@ -26,18 +26,22 @@ bazel_dep(name = "rules_go", version = "0.54.1")
 #     integrity = "sha256-R+a3OiKs5ib8pdjsJVDPvb9GgW3yWRXEzkGci9xgspk=",
 # )
 
-bazel_dep(name = "gazelle", version = "0.43.0")
+bazel_dep(name = "gazelle", version = "0.33.0")  # https://github.com/bazelbuild/gazelle/tags
 
-bazel_dep(name = "rules_cc", version = "0.1.1")  # https://github.com/bazelbuild/rules_cc/tags
+# Do NOT use rules_cc
+# bazel_dep(name = "rules_cc", version = "0.1.1")  # https://github.com/bazelbuild/rules_cc/tags
 
 #bazel_dep(name = "rules_pkg", version = "1.1.0")  # https://github.com/bazelbuild/rules_pkg/tags
 
-bazel_dep(name = "platforms", version = "0.0.11")
+bazel_dep(name = "platforms", version = "1.0.0")  # https://github.com/bazelbuild/platforms/tags
+
+# We use our own custom LLVM toolchain instead of toolchains_llvm
+# bazel_dep(name = "toolchains_llvm", version = "1.4.0")  # https://github.com/bazel-contrib/toolchains_llvm/tags
 
 # bazel_dep(name = "ncurses", version = "6.4.20221231.bcr.8")  # https://registry.bazel.build/modules/ncurses
 # bazel_dep(name = "zlib", version = "1.3.1.bcr.5")  # https://registry.bazel.build/modules/zlib
 
-bazel_dep(name = "libxml2", version = "2.13.5")  # https://registry.bazel.build/modules/libxml2
+# azel_dep(name = "libxml2", version = "2.13.5")  # https://registry.bazel.build/modules/libxml2
 
 # don't use libxml2-go = https://github.com/lestrrat-go/libxml2
 #bazel_dep(name = "libxml2-go", version = "0.0.0-20250331-c934e3f")  # https://registry.bazel.build/modules/libxml2-go
@@ -48,51 +52,110 @@ http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "ht
 # Common library sysroot (headers)
 http_archive(
     name = "bazel_sysroot_library",
-    urls = ["https://github.com/randomizedcoder/bazel_sysroot_library/archive/refs/heads/main.tar.gz"],
-    strip_prefix = "bazel_sysroot_library-main/sysroot",
     build_file = "//:sysroot.BUILD",
+    strip_prefix = "bazel_sysroot_library-main/sysroot",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_library/archive/refs/heads/main.tar.gz"],
 )
 
 # Architecture-specific sysroots (libraries)
 http_archive(
     name = "bazel_sysroot_lib_amd64",
     urls = ["https://github.com/randomizedcoder/bazel_sysroot_lib_amd64/archive/refs/heads/main.tar.gz"],
+    build_file_content = """
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = glob(["**"]),
+)
+
+filegroup(
+    name = "include",
+    srcs = glob(["include/*"]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "lib",
+    srcs = glob(["lib/*"]),
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "system_libs",
+    srcs = glob(["lib/*.so", "lib/*.so.*"], exclude=["lib/*.so.*.py"]),
+    linkstatic = 1,
+    visibility = ["//visibility:public"],
+)
+""",
     strip_prefix = "bazel_sysroot_lib_amd64-main/sysroot",
-    build_file = "//:sysroot.BUILD",
 )
 
 http_archive(
     name = "bazel_sysroot_lib_arm64",
     urls = ["https://github.com/randomizedcoder/bazel_sysroot_lib_arm64/archive/refs/heads/main.tar.gz"],
+    build_file_content = """
+package(default_visibility = ["//visibility:public"])
+
+filegroup(
+    name = "all",
+    srcs = glob(["**"]),
+)
+
+filegroup(
+    name = "include",
+    srcs = glob(["include/*"]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "lib",
+    srcs = glob(["lib/*"]),
+    visibility = ["//visibility:public"],
+)
+
+cc_library(
+    name = "system_libs",
+    srcs = glob(["lib/*.so", "lib/*.so.*"], exclude=["lib/*.so.*.py"]),
+    linkstatic = 1,
+    visibility = ["//visibility:public"],
+)
+""",
     strip_prefix = "bazel_sysroot_lib_arm64-main/sysroot",
-    build_file = "//:sysroot.BUILD",
 )
 
 # LLVM toolchain setup
 http_archive(
     name = "bazel_sysroot_llvm_amd64",
-    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64/archive/refs/heads/main.tar.gz"],
+    build_file = "//:toolchain.BUILD",
     strip_prefix = "bazel_sysroot_llvm_amd64-main/sysroot",
-    build_file = "//:sysroot.BUILD",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64/archive/refs/heads/main.tar.gz"],
 )
 
 http_archive(
     name = "bazel_sysroot_llvm_arm64",
-    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_arm64/archive/refs/heads/main.tar.gz"],
+    build_file = "//:toolchain.BUILD",
     strip_prefix = "bazel_sysroot_llvm_arm64-main/sysroot",
-    build_file = "//:sysroot.BUILD",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_arm64/archive/refs/heads/main.tar.gz"],
+)
+
+# Register execution platform
+register_execution_platforms("//:linux_x86_64")
+
+# Register custom toolchains
+register_toolchains(
+    "//:llvm_toolchain_amd64_registration",
+    "//:llvm_toolchain_arm64_registration",
 )
 
 # Go SDK setup
 go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
 go_sdk.download(
     name = "go_sdk",
-    version = "1.24.3",
+    version = "1.22.0",
 )
-use_repo(go_sdk, "go_sdk")
 
 go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
 go_deps.from_file(go_mod = "//:go.mod")
-use_repo(go_deps)
 
 # end

@@ -3,38 +3,76 @@
 #
 
 load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
-load("@rules_cc//cc:defs.bzl", "cc_library")
+load("@bazel_tools//tools/cpp:toolchain_utils.bzl", "find_cpp_toolchain")
+load("@bazel_tools//tools/build_defs/cc:action_names.bzl", "ACTION_NAMES")
+load("@bazel_tools//tools/cpp:cc_toolchain_config_lib.bzl", "feature", "flag_group", "flag_set", "tool_path", "with_feature_set")
+load("//:cc_toolchain_config.bzl", "cc_toolchain_config")
+
+# Custom C++ toolchain for AMD64
+cc_toolchain_config(
+    name = "llvm_toolchain_config_amd64",
+    cpu = "k8",
+)
+
+cc_toolchain(
+    name = "llvm_toolchain_amd64",
+    toolchain_config = ":llvm_toolchain_config_amd64",
+    all_files = "@bazel_sysroot_llvm_amd64//:all",
+    ar_files = "@bazel_sysroot_llvm_amd64//:binaries",
+    compiler_files = "@bazel_sysroot_llvm_amd64//:binaries",
+    dwp_files = "@bazel_sysroot_llvm_amd64//:binaries",
+    linker_files = "@bazel_sysroot_llvm_amd64//:binaries",
+    objcopy_files = "@bazel_sysroot_llvm_amd64//:binaries",
+    strip_files = "@bazel_sysroot_llvm_amd64//:binaries",
+    supports_param_files = 1,
+)
+
+# Custom C++ toolchain for ARM64
+cc_toolchain_config(
+    name = "llvm_toolchain_config_arm64",
+    cpu = "aarch64",
+)
+
+cc_toolchain(
+    name = "llvm_toolchain_arm64",
+    toolchain_config = ":llvm_toolchain_config_arm64",
+    all_files = "@bazel_sysroot_llvm_arm64//:all",
+    ar_files = "@bazel_sysroot_llvm_arm64//:binaries",
+    compiler_files = "@bazel_sysroot_llvm_arm64//:binaries",
+    dwp_files = "@bazel_sysroot_llvm_arm64//:binaries",
+    linker_files = "@bazel_sysroot_llvm_arm64//:binaries",
+    objcopy_files = "@bazel_sysroot_llvm_arm64//:binaries",
+    strip_files = "@bazel_sysroot_llvm_arm64//:binaries",
+    supports_param_files = 1,
+)
+
+cc_toolchain_suite(
+    name = "llvm_toolchain_suite",
+    toolchains = {
+        "k8": ":llvm_toolchain_amd64",
+        "aarch64": ":llvm_toolchain_arm64",
+    },
+)
 
 # System dependencies for AMD64
 cc_library(
     name = "system_deps_amd64",
-    srcs = ["@bazel_sysroot_lib_amd64//:lib/libxml2.so.2"],
+    deps = ["@bazel_sysroot_lib_amd64//:system_libs"],
     includes = ["@bazel_sysroot_library//:include"],
-    linkstatic = 0,
-    linkopts = [
-        "-L@bazel_sysroot_lib_amd64//:lib",
-        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_lib_amd64/lib",
-        "-Wl,--no-as-needed",
-        "-lxml2",
-    ],
+    linkstatic = 1,
     visibility = ["//visibility:public"],
 )
 
 # System dependencies for ARM64
 cc_library(
     name = "system_deps_arm64",
-    srcs = ["@bazel_sysroot_lib_arm64//:lib/libxml2.so.2"],
+    deps = ["@bazel_sysroot_lib_arm64//:system_libs"],
     includes = ["@bazel_sysroot_library//:include"],
-    linkstatic = 0,
-    linkopts = [
-        "-L@bazel_sysroot_lib_arm64//:lib",
-        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_lib_arm64/lib",
-        "-Wl,--no-as-needed",
-        "-lxml2",
-    ],
+    linkstatic = 1,
     visibility = ["//visibility:public"],
 )
 
+# Go targets
 go_library(
     name = "hello_lib",
     srcs = ["hello.go"],
@@ -56,16 +94,10 @@ go_test(
     cdeps = [":system_deps_amd64"],
     data = [
         "@bazel_sysroot_lib_amd64//:all",
-        "@bazel_sysroot_llvm_amd64//:all",
+        "@bazel_sysroot_llvm_amd64//:binaries",
     ],
-    impure_env = {
-        "LD_LIBRARY_PATH": "external/bazel_sysroot_lib_amd64/lib",
-    },
-    clinkopts = [
-        "-L@bazel_sysroot_lib_amd64//:lib",
-        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_lib_amd64/lib",
-        "-Wl,--no-as-needed",
-        "-lxml2",
+    copts = [
+        "-I@bazel_sysroot_library//:include",
     ],
 )
 
@@ -78,19 +110,14 @@ go_test(
     cdeps = [":system_deps_arm64"],
     data = [
         "@bazel_sysroot_lib_arm64//:all",
-        "@bazel_sysroot_llvm_arm64//:all",
+        "@bazel_sysroot_llvm_arm64//:binaries",
     ],
-    impure_env = {
-        "LD_LIBRARY_PATH": "external/bazel_sysroot_lib_arm64/lib",
-    },
-    clinkopts = [
-        "-L@bazel_sysroot_lib_arm64//:lib",
-        "-Wl,-rpath,$$ORIGIN/../../external/bazel_sysroot_lib_arm64/lib",
-        "-Wl,--no-as-needed",
-        "-lxml2",
+    copts = [
+        "-I@bazel_sysroot_library//:include",
     ],
 )
 
+# Platform definitions
 platform(
     name = "linux_x86_64",
     constraint_values = [
@@ -132,7 +159,26 @@ go_test(
         ":go_hello_world_race_lib",
     ],
     cgo = True,
-    static = "on",
+)
+
+toolchain(
+    name = "llvm_toolchain_amd64_registration",
+    toolchain = ":llvm_toolchain_amd64",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+)
+
+toolchain(
+    name = "llvm_toolchain_arm64_registration",
+    toolchain = ":llvm_toolchain_arm64",
+    toolchain_type = "@bazel_tools//tools/cpp:toolchain_type",
+    target_compatible_with = [
+        "@platforms//os:linux",
+        "@platforms//cpu:aarch64",
+    ],
 )
 
 # end
