@@ -1,0 +1,9 @@
+module(
+    name = "go_hello_world_race_debug", # Using a temporary name for debugging
+    version = "0.0.1",
+)
+
+# --- Use Module Extension to Fetch Custom Sysroots ---
+# This will be line 7 if the comment above is present, or line 5 if not.
+sysroots_ext = use_extension("//:deps.bzl", "sysroots_ext")
+sysroots_ext.fetch()

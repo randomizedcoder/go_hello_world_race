@@ -127,4 +127,11 @@ rsync_arm64:
 	rsync -av ./sysroot-library/sysroot/library/ ../bazel_remote_runner_sysroot/sysroot/library/
 	rsync -av ./sysroot-lib-arm64/sysroot/arm64/ ../bazel_remote_runner_sysroot/sysroot/arm64/
 
+#
+test_amd64:
+	bazelisk test //:hello_test_arm64 --verbose_failures  --config=local-sysroot --sandbox_debug
+
+cycle:
+	bazelisk clean --expunge && bazelisk test //:hello_test_amd64 --verbose_failures  --config=local-sysroot --sandbox_debug
+
 # end

@@ -123,6 +123,7 @@ The improve_env hack was good to prove the challenge with toolchain_llvm, but us
 
 (But I'd still like to merge the patch :)
 
+
 2. Use dzbarsky/static-clang
 I'm obviously not the first person to run into these types of issues, and so dzbarsky has built a statically compiled version.
 https://github.com/dzbarsky/static-clang
@@ -130,6 +131,11 @@ https://github.com/dzbarsky/static-clang
 Essentially, this repo could be used to replace the toolchain_llvm with the statically compiled versions.
 
 I suspect this would solve the problem, but this repo is built using Docker, and various other non-hermetic techniques that for Nix purists just feels dirty.
+
+Please note that for many people dzbarsky/static-clang is probably a good option, particularly because of the good blogs, and extensive tests.
+- https://steven.casagrande.io/posts/2024/sysroot-generation-toolchains-llvm/
+- https://github.com/bazel-contrib/toolchains_llvm/tree/1.0.0/tests
+
 
 3. Use Nix to create the toolchain_llvm
 Similar to option 2, Nix can be used to create a statically compiled toolchain_llvm. This has the advantage that it will be completely hermetic, and because the Nix packages are regularly maintained and tested, it will be easy to keep the toolchain up to date. e.g., Running "nix flake update" and rebuilding will be the only maintenance required.
@@ -152,6 +158,16 @@ The sysroots will be:
 - bazel_sysroot_llvm_arm64
 - bazel_sysroot_lib_amd64
 - bazel_sysroot_lib_arm64
+
+For each repo, these are pushed into git as files, but then bazel can download the files in a tar.gz, where github provides the ability to generate the .tar.gz on the fly.
+```
+http_archive(
+    name = "bazel_sysroot_tarball_amd64",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64/archive/refs/heads/main.tar.gz"],
+    strip_prefix = "bazel_sysroot_llvm_amd64-main/sysroot",
+    build_file = "//:BUILD.bazel",
+)
+```
 
 ### bazel_sysroot_library
 
@@ -197,3 +213,268 @@ Assuming this works, it will mean that this repository demonstrates:
 - Go race tests remotely
 - Serves as an example for other Go users how to use Bazel
 - Sysroots that are hermetic and well managed by Nix
+
+## Sysroot Structure
+
+The project uses five separate sysroots, each with a specific responsibility and its own embedded BUILD file:
+
+### 1. bazel_sysroot_library
+- **Purpose**: Common headers and system libraries shared across architectures
+- **Directory Structure**:
+  ```
+  sysroot/
+  ├── include/     # Common header files
+  ├── lib/         # Common system libraries
+  └── BUILD.bazel
+  ```
+- **BUILD.bazel**:
+  - Exposes `include` and `lib` filegroups
+  - Defines `system_deps` (shared) and `system_deps_static` (static) cc_library targets
+
+### 2. bazel_sysroot_lib_amd64
+- **Purpose**: AMD64-specific shared libraries
+- **Directory Structure**:
+  ```
+  sysroot/
+  ├── lib/         # AMD64-specific libraries
+  └── BUILD.bazel
+  ```
+- **BUILD.bazel**:
+  - Exposes `lib` filegroup
+  - Defines `system_libs` cc_library target for AMD64
+
+### 3. bazel_sysroot_lib_arm64
+- **Purpose**: ARM64-specific shared libraries
+- **Directory Structure**:
+  ```
+  sysroot/
+  ├── lib/         # ARM64-specific libraries
+  └── BUILD.bazel
+  ```
+- **BUILD.bazel**:
+  - Exposes `lib` filegroup
+  - Defines `system_libs` cc_library target for ARM64
+
+### 4. bazel_sysroot_llvm_amd64
+- **Purpose**: AMD64 LLVM toolchain tools
+- **Directory Structure**:
+  ```
+  sysroot/
+  ├── bin/         # LLVM tools and GNU symlinks
+  └── BUILD.bazel
+  ```
+- **BUILD.bazel**:
+  - Exposes `bin` filegroup
+  - Defines individual tool targets (as, ar, ld, etc.)
+  - Includes GNU tool symlinks
+
+### 5. bazel_sysroot_llvm_arm64
+- **Purpose**: ARM64 LLVM toolchain tools
+- **Directory Structure**:
+  ```
+  sysroot/
+  ├── bin/         # LLVM tools and GNU symlinks
+  └── BUILD.bazel
+  ```
+- **BUILD.bazel**:
+  - Exposes `bin` filegroup
+  - Defines individual tool targets (as, ar, ld, etc.)
+  - Includes GNU tool symlinks
+
+## Bazel Configuration
+
+The `MODULE.bazel` file configures the build system to use these sysroots:
+
+1. **Import Sysroots**:
+   ```python
+   # Common headers and libraries
+   http_archive(name = "bazel_sysroot_library", ...)
+
+   # Architecture-specific libraries
+   http_archive(name = "bazel_sysroot_lib_amd64", ...)
+   http_archive(name = "bazel_sysroot_lib_arm64", ...)
+
+   # LLVM toolchains
+   http_archive(name = "bazel_sysroot_tarball_amd64", ...)
+   http_archive(name = "bazel_sysroot_tarball_arm64", ...)
+   ```
+
+2. **Configure LLVM Toolchains**:
+   ```python
+   # AMD64 Toolchain
+   llvm.toolchain(
+       name = "llvm_toolchain",
+       llvm_version = "20.1.2",
+   )
+   llvm.sysroot(
+       name = "llvm_toolchain",
+       targets = ["linux-x86_64"],
+       label = "@bazel_sysroot_tarball_amd64//:sysroot",
+       include_prefix = "@bazel_sysroot_library//:include",
+       lib_prefix = "@bazel_sysroot_lib_amd64//:lib",
+       system_libs = [
+           "@bazel_sysroot_library//:system_deps",
+           "@bazel_sysroot_library//:system_deps_static",
+       ],
+   )
+
+   # ARM64 Toolchain
+   llvm.toolchain(
+       name = "llvm_toolchain_arm64",
+       llvm_version = "20.1.2",
+   )
+   llvm.sysroot(
+       name = "llvm_toolchain_arm64",
+       targets = ["linux-aarch64"],
+       label = "@bazel_sysroot_tarball_arm64//:sysroot",
+       include_prefix = "@bazel_sysroot_library//:include",
+       lib_prefix = "@bazel_sysroot_lib_arm64//:lib",
+       system_libs = [
+           "@bazel_sysroot_library//:system_deps",
+           "@bazel_sysroot_library//:system_deps_static",
+       ],
+   )
+   ```
+
+This configuration ensures that:
+1. Common headers and libraries are shared across architectures
+2. Architecture-specific libraries are used appropriately
+3. LLVM tools are available for each architecture
+4. The toolchain can find all necessary components in their correct locations
+
+## Building
+
+To build for AMD64:
+```bash
+bazel build --platforms=@platforms//cpu:x86_64 //...
+```
+
+To build for ARM64:
+```bash
+bazel build --platforms=@platforms//cpu:arm64 //...
+```
+
+## Testing
+
+To run tests for AMD64:
+```bash
+bazel test --platforms=@platforms//cpu:x86_64 //...
+```
+
+To run tests for ARM64:
+```bash
+bazel test --platforms=@platforms//cpu:arm64 //...
+```
+
+# Go Hello World Race
+
+This project demonstrates cross-platform Go development using Bazel, with support for both AMD64 and ARM64 architectures.
+
+## Project Structure
+
+```
+.
+├── BUILD.bazel
+├── MODULE.bazel
+├── hello.go
+├── hello_test.go
+└── main.go
+```
+
+## Sysroot Structure
+
+The project uses five specialized sysroots, each responsible for a specific part of the build environment:
+
+1. `bazel_sysroot_library` - Common library headers and files
+   - Exposes `/include` directory
+   - Contains shared headers and library files used by both architectures
+
+2. `bazel_sysroot_lib_amd64` - AMD64-specific libraries
+   - Exposes `/lib` directory
+   - Contains AMD64-specific shared libraries
+   - Depends on `bazel_sysroot_library` for headers
+
+3. `bazel_sysroot_lib_arm64` - ARM64-specific libraries
+   - Exposes `/lib` directory
+   - Contains ARM64-specific shared libraries
+   - Depends on `bazel_sysroot_library` for headers
+
+4. `bazel_sysroot_llvm_amd64` - AMD64-specific LLVM tools
+   - Exposes `/bin` directory
+   - Contains AMD64-specific LLVM compiler tools
+   - Used for building AMD64 binaries
+
+5. `bazel_sysroot_llvm_arm64` - ARM64-specific LLVM tools
+   - Exposes `/bin` directory
+   - Contains ARM64-specific LLVM compiler tools
+   - Used for building ARM64 binaries
+
+Each sysroot includes a `BUILD.sysroot.bazel` file that defines the filegroups and visibility rules for its contents.
+
+## Bazel Configuration
+
+The project uses Bazel's LLVM toolchain configuration to integrate the sysroots. The configuration in `MODULE.bazel` will:
+
+1. Import each sysroot as a Bazel module:
+   ```python
+   bazel_dep(name = "bazel_sysroot_library", version = "1.0.0")
+   bazel_dep(name = "bazel_sysroot_lib_amd64", version = "1.0.0")
+   bazel_dep(name = "bazel_sysroot_lib_arm64", version = "1.0.0")
+   bazel_dep(name = "bazel_sysroot_llvm_amd64", version = "1.0.0")
+   bazel_dep(name = "bazel_sysroot_llvm_arm64", version = "1.0.0")
+   ```
+
+2. Configure the LLVM toolchain for each architecture:
+   ```python
+   llvm_toolchain(
+       name = "llvm_amd64",
+       sysroot = "@bazel_sysroot_library//:sysroot",
+       lib_sysroot = "@bazel_sysroot_lib_amd64//:sysroot",
+       toolchain_path = "@bazel_sysroot_llvm_amd64//:sysroot",
+       ...
+   )
+
+   llvm_toolchain(
+       name = "llvm_arm64",
+       sysroot = "@bazel_sysroot_library//:sysroot",
+       lib_sysroot = "@bazel_sysroot_lib_arm64//:sysroot",
+       toolchain_path = "@bazel_sysroot_llvm_arm64//:sysroot",
+       ...
+   )
+   ```
+
+3. Register the toolchains for use:
+   ```python
+   register_toolchains(
+       "//:llvm_amd64_toolchain",
+       "//:llvm_arm64_toolchain",
+   )
+   ```
+
+## Building
+
+To build the project:
+
+```bash
+bazel build //...
+```
+
+To run tests:
+
+```bash
+bazel test //...
+```
+
+## Cross-Platform Support
+
+The project supports both AMD64 and ARM64 architectures. The build system automatically selects the appropriate sysroot based on the target platform.
+
+For AMD64:
+```bash
+bazel build --platforms=//:linux_x86_64 //...
+```
+
+For ARM64:
+```bash
+bazel build --platforms=//:linux_arm64 //...
+```

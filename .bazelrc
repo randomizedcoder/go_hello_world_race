@@ -41,34 +41,17 @@ try-import .bazelrc.generated
 build:race --features=race
 build:race --@io_bazel_rules_go//go/config:race
 
-build:local-sysroot --action_env=PATH=$PWD/result/bin:/bin:/usr/bin
-build:local-sysroot --action_env=CPATH=$PWD/result/include
-build:local-sysroot --action_env=LIBRARY_PATH=$PWD/result/lib
 build:local-sysroot --action_env=CGO_ENABLED=1
-#build:local-sysroot --action_env=CC=clang
-build:local-sysroot --action_env=CGO_CFLAGS="-I$PWD/result/include"
-build:local-sysroot --action_env=CGO_LDFLAGS="-L$PWD/result/lib"
-build:local-sysroot --action_env=CC=$PWD/cc_wrapper.sh
-build:local-sysroot --action_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysroot_tarball/lib
-
-# build:local-sysroot --repo_env=CC=$PWD/cc_wrapper.sh
-#build:local-sysroot --repo_env=CC=/usr/bin/false
-build:local-sysroot --repo_env=PATH=$PWD/result/bin:/bin:/usr/bin
-build:local-sysroot --repo_env=CPATH=$PWD/result/include
-build:local-sysroot --repo_env=LIBRARY_PATH=$PWD/result/lib
-build:local-sysroot --repo_env=CGO_CFLAGS="-I$PWD/result/include"
-build:local-sysroot --repo_env=CGO_LDFLAGS="-L$PWD/result/lib"
-build:local-sysroot --repo_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysroot_tarball/lib
-
-build:local-sysroot --test_env=LD_LIBRARY_PATH=external/+_repo_rules+bazel_sysroot_tarball/lib
+build:local-sysroot --extra_toolchains=@llvm_amd64//:cc-toolchain-x86_64-linux
+build:local-sysroot --extra_toolchains=@llvm_arm64//:cc-toolchain-aarch64-linux
 
 # Platform configurations
 build:x86_64 --platforms=//:linux_x86_64
-build:x86_64 --extra_toolchains=//:llvm_toolchain_suite
+#build:x86_64 --extra_toolchains=//:llvm_toolchain_suite
 build:x86_64 --host_platform=//:linux_x86_64
 
 build:arm64 --platforms=//:linux_arm64
-build:arm64 --extra_toolchains=//:llvm_toolchain_suite
+#build:arm64 --extra_toolchains=//:llvm_toolchain_suite
 build:arm64 --host_platform=//:linux_arm64
 
 # Common build settings

@@ -1,0 +1,92 @@
+#
+# BUILD.bazel
+#
+
+load("@rules_go//go:def.bzl", "go_binary", "go_library", "go_test")
+
+# Go targets
+go_library(
+    name = "hello_lib",
+    srcs = ["hello.go"],
+    importpath = "github.com/das/go_hello_world_race",
+)
+
+go_binary(
+    name = "hello_bin",
+    srcs = ["hello.go"],
+    deps = [":hello_lib"],
+)
+
+# Test for AMD64
+go_test(
+    name = "hello_test_amd64",
+    srcs = ["hello_test.go"],
+    embed = [":hello_lib"],
+    cgo = True,
+    data = [
+        "@bazel_sysroot_llvm_amd64//:all",
+    ],
+    copts = [
+        "-I@bazel_sysroot_library//:include",
+    ],
+)
+
+# Test for ARM64
+go_test(
+    name = "hello_test_arm64",
+    srcs = ["hello_test.go"],
+    embed = [":hello_lib"],
+    cgo = True,
+    data = [
+        "@bazel_sysroot_llvm_arm64//:all",
+    ],
+    copts = [
+        "-I@bazel_sysroot_library//:include",
+    ],
+)
+
+# Platform definitions
+platform(
+    name = "linux_x86_64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:x86_64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+platform(
+    name = "linux_arm64",
+    constraint_values = [
+        "@platforms//os:linux",
+        "@platforms//cpu:arm64",
+    ],
+    visibility = ["//visibility:public"],
+)
+
+package(default_visibility = ["//visibility:public"])
+
+go_library(
+    name = "go_hello_world_race_lib",
+    srcs = ["main.go"],
+    importpath = "github.com/das/go_hello_world_race",
+)
+
+go_binary(
+    name = "go_hello_world_race",
+    srcs = ["main.go"],
+    deps = [
+        ":go_hello_world_race_lib",
+    ],
+)
+
+go_test(
+    name = "go_hello_world_race_test",
+    srcs = ["main_test.go"],
+    deps = [
+        ":go_hello_world_race_lib",
+    ],
+    cgo = True,
+)
+
+# end
