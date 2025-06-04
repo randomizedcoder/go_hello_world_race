@@ -7,68 +7,219 @@ module(
     version = "1.0",
 )
 
-bazel_dep(name = "rules_go", version = "0.54.1")
 bazel_dep(name = "toolchains_llvm", version = "1.4.0")
-bazel_dep(name = "gazelle", version = "0.43.0")
-bazel_dep(name = "platforms", version = "0.0.10") # Need platforms module for cross-compilation later
-
-# Use module extension to fetch sysroots (defined in deps.bzl)
-sysroots_ext = use_extension("//:deps.bzl", "sysroots_ext")
-sysroots_ext.fetch() # Trigger the extension to run http_archive calls
+bazel_dep(name = "platforms", version = "1.0.0")
+bazel_dep(name = "rules_cc", version = "0.1.1")
 
 # Configure LLVM toolchains
-llvm = use_extension("@toolchains_llvm//:extensions.bzl", "llvm") # Correct path to the main extension
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 
 # Configure the AMD64 toolchain
 llvm.toolchain(
     name = "llvm_amd64",
-    llvm_version = "20.1.4",
+    llvm_version = "20.1.2",
+    stdlib = {
+        "linux-x86_64": "stdc++",
+    },
+)
+
+# Use http_archive to fetch the sysroot
+http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+
+http_archive(
+    name = "bazel_sysroot_llvm_amd64",
+    build_file_content = """
+package(default_visibility = ["//visibility:public"])
+
+# Main filegroup that includes everything
+filegroup(
+    name = "all",
+    srcs = [":sysroot"],
+)
+
+# Bin directory for tools
+filegroup(
+    name = "bin",
+    srcs = glob(["bin/**"]),
+    visibility = ["//visibility:public"],
+)
+
+# Empty lib directory for linker components
+filegroup(
+    name = "lib",
+    srcs = [],
+    visibility = ["//visibility:public"],
+)
+
+# Empty include directory for compiler components
+filegroup(
+    name = "include",
+    srcs = [],
+    visibility = ["//visibility:public"],
+)
+
+# Sysroot filegroup for bin directory
+filegroup(
+    name = "sysroot",
+    srcs = [":bin", ":lib", ":include"],
+)
+
+# Individual tool targets
+filegroup(
+    name = "clang",
+    srcs = glob(["bin/clang*"]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "clang-cpp",
+    srcs = ["bin/clang-cpp"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "lld",
+    srcs = glob(["bin/lld*"]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-ar",
+    srcs = ["bin/llvm-ar"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-as",
+    srcs = ["bin/llvm-as"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-nm",
+    srcs = ["bin/llvm-nm"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-objcopy",
+    srcs = ["bin/llvm-objcopy"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-objdump",
+    srcs = ["bin/llvm-objdump"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-readelf",
+    srcs = ["bin/llvm-readelf"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-strip",
+    srcs = ["bin/llvm-strip"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "llvm-dwp",
+    srcs = ["bin/llvm-dwp"],
+    visibility = ["//visibility:public"],
+)
+
+# Standard tool aliases
+filegroup(
+    name = "ar",
+    srcs = [":llvm-ar"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "as",
+    srcs = [":llvm-as"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "nm",
+    srcs = [":llvm-nm"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "objcopy",
+    srcs = [":llvm-objcopy"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "objdump",
+    srcs = [":llvm-objdump"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "readelf",
+    srcs = [":llvm-readelf"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "strip",
+    srcs = [":llvm-strip"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "dwp",
+    srcs = [":llvm-dwp"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "ld",
+    srcs = [":lld"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "gcc",
+    srcs = [":clang"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "g++",
+    srcs = [":clang"],
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "cpp",
+    srcs = [":clang-cpp"],
+    visibility = ["//visibility:public"],
+)
+""",
+    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64/archive/refs/heads/main.tar.gz"],
+    sha256 = "03cfe7f73c392fd3eeed8c7490d194f39007cbb9569a00839a4668c6865dc51a",
+    strip_prefix = "bazel_sysroot_llvm_amd64-main/sysroot",
+)
+
+llvm.toolchain_root(
+    name = "llvm_amd64",
+    label = "@bazel_sysroot_llvm_amd64//:sysroot",
 )
 
 llvm.sysroot(
     name = "llvm_amd64",
-    targets = ["x86_64-linux-gnu"],
+    targets = ["linux-x86_64"],
     label = "@bazel_sysroot_llvm_amd64//:sysroot",
-    include_prefix = "@bazel_sysroot_library//:include",
-    lib_prefix = "@bazel_sysroot_lib_amd64//:lib",
-    system_libs = [
-        "@bazel_sysroot_library//:system_deps",
-        "@bazel_sysroot_library//:system_deps_static",
-        "@bazel_sysroot_lib_amd64//:system_libs",
-    ],
 )
 
-# Configure the ARM64 toolchain
-llvm.toolchain(
-    name = "llvm_arm64",
-    llvm_version = "20.1.2",
-)
-
-llvm.sysroot(
-    name = "llvm_arm64",
-    targets = ["aarch64-linux-gnu"],
-    label = "@bazel_sysroot_llvm_arm64//:sysroot",
-    include_prefix = "@bazel_sysroot_library//:include",
-    lib_prefix = "@bazel_sysroot_lib_arm64//:lib",
-    system_libs = [
-        "@bazel_sysroot_library//:system_deps",
-        "@bazel_sysroot_library//:system_deps_static",
-        "@bazel_sysroot_lib_arm64//:system_libs",
-    ],
-)
-
-use_repo(llvm, "llvm_amd64", "llvm_arm64")
-
-# Go SDK setup
-go_sdk = use_extension("@rules_go//go:extensions.bzl", "go_sdk")
-go_sdk.download( # This uses the go_sdk extension from rules_go. It will fetch the Go SDK.
-    name = "go_sdk",
-    version = "1.24.3",
-)
-use_repo(go_sdk, "go_sdk")
-
-go_deps = use_extension("@gazelle//:extensions.bzl", "go_deps")
-go_deps.from_file(go_mod = "//:go.mod")
-use_repo(go_deps)
+use_repo(llvm, "llvm_amd64")
 
 # end

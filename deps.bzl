@@ -14,25 +14,14 @@ def _sysroots_extension_impl(module_ctx):
         urls = ["https://github.com/randomizedcoder/bazel_sysroot_library/archive/refs/heads/main.tar.gz"],
         sha256 = "ee9a2366f3594ab1793779fa8e4d986dd50bf54a775d2804a2b2c0f3ad81dd05",
         strip_prefix = "bazel_sysroot_library-main/sysroot",
-        # build_file attribute removed; BUILD.bazel is expected in the archive.
     )
 
     # AMD64-specific library sysroot
     http_archive(
         name = "bazel_sysroot_lib_amd64",
         urls = ["https://github.com/randomizedcoder/bazel_sysroot_lib_amd64/archive/refs/heads/main.tar.gz"],
-        sha256 = "1720a0cbf08e06d9ff9622c98d4dced08c46badef3411e91bd37ad399df4b770", # Ensure this is up-to-date if you changed the repo
+        sha256 = "1720a0cbf08e06d9ff9622c98d4dced08c46badef3411e91bd37ad399df4b770",
         strip_prefix = "bazel_sysroot_lib_amd64-main/sysroot",
-        # build_file attribute removed; BUILD.bazel is expected in the archive.
-    )
-
-    # ARM64-specific library sysroot (Added back for completeness)
-    http_archive(
-        name = "bazel_sysroot_lib_arm64",
-        urls = ["https://github.com/randomizedcoder/bazel_sysroot_lib_arm64/archive/refs/heads/main.tar.gz"],
-        sha256 = "3eb494d14b91cbac1c474e88540c361b5ef7bb7d1970cf6fd5669cb4050bf0e5", # Ensure this is up-to-date
-        strip_prefix = "bazel_sysroot_lib_arm64-main/sysroot",
-        # build_file attribute removed; BUILD.bazel is expected in the archive.
     )
 
     # ARM64-specific library sysroot
@@ -50,6 +39,7 @@ def _sysroots_extension_impl(module_ctx):
         sha256 = "03cfe7f73c392fd3eeed8c7490d194f39007cbb9569a00839a4668c6865dc51a",
         strip_prefix = "bazel_sysroot_llvm_amd64-main/sysroot",
     )
+
     # ARM64 LLVM toolchain sysroot
     http_archive(
         name = "bazel_sysroot_llvm_arm64",

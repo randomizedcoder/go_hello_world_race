@@ -4,7 +4,9 @@
 
 ## Introduction and Motivation
 
-The aim of this repository is to demonstrate how to use Bazel to compile a simple "hello world" Go program, with a focus on including Go race tests.
+The aim of this repository is to demonstrate how to use Bazel to:
+- compile a "hello world" c++ program (hello.cc)
+- compile a "hello world" Go program (hello.go), with a focus on including Go race tests (hello_test.go)
 
 Given that a key feature of Go is its easy-to-use concurrency, race tests are critical for anyone wanting to use Bazel with Go. However, I've been unable to find a simple example, so this repository aims to fill that gap. ( [Bazel Go tutorial](https://bazel.build/start/go) and [here](https://github.com/bazelbuild/examples/tree/main/go-tutorial/stage3) .)
 
@@ -37,9 +39,9 @@ For more details, see the [Go source distribution's Makefile](https://github.com
 
 To run the race test, a linker like ld.lld needs to link the compiled Go code with the shared libraries.
 
-This introduces major challenges for Go because it means we need to somehow supply the linker. I was unable to find a simple example of how to do this, and after trying now for several weeks unsuccessfully, I now know why. I think the reason a simple example doesn't exist is that most organizations using Bazel are also compiling and linking other C/C++ code, so they already have the C/C++ "toolchains" as Bazel calls them.
+This introduces major challenges for Go because it means we need to somehow supply the linker. I was unable to find a simple example of how to do this, and after trying now for several weeks unsuccessfully, I now know why. I think the reason a simple example doesn't exist is that most organizations using Bazel are also compiling and linking other C/C++ code, so they already have the C/C++ "toolchains" as Bazel calls them.  Getting the C/C++ toolchains setup correctly has been a lot harder than expected, so to reduce complexity while working this out, I added hello.cc.
 
-( I didn't really understand until trying to solve this Bazel nightmare how the go race tests worked, so this has been valuable. )
+( I didn't really understand how the go race tests where linked to c++ code until trying to solve this Bazel nightmare , so this has been valuable learning about golang. )
 
 ## NixOS and Bazel Undeclared Dependencies
 
@@ -78,6 +80,12 @@ I tried to use toolchains_llvm. You need to be extremely careful with the versio
 ```bazel
 bazel_dep(name = "toolchains_llvm", version = "1.4.0")  # https://github.com/bazel-contrib/toolchains_llvm/tags
 ```
+
+**Note:** When using the `toolchains_llvm` module, ensure you load the extension from the correct path. For example, use:
+```bazel
+llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
+```
+instead of `@toolchains_llvm//:extensions.bzl`. This is because the actual file is located at `toolchain/extensions/llvm.bzl` in the repo.
 
 However, the default toolchains_llvm compiles Clang to use shared libraries, and to my shock and horror, toolchains_llvm does not supply its own dependencies. ??!! Bazel's toolchains_llvm assumes you will have libraries like libxml2.so.2 available, and I guess for lots of Bazel users they do exist in standard locations, which the Bazel sandbox happily leaks into the "hermetic build". (I haven't filed the issue for this yet, but I should.)
 
@@ -134,8 +142,13 @@ I suspect this would solve the problem, but this repo is built using Docker, and
 
 Please note that for many people dzbarsky/static-clang is probably a good option, particularly because of the good blogs, and extensive tests.
 - https://steven.casagrande.io/posts/2024/sysroot-generation-toolchains-llvm/
+- https://steven.casagrande.io/posts/2024/building-macos-llvm-package/
 - https://github.com/bazel-contrib/toolchains_llvm/tree/1.0.0/tests
 
+To download and review static-clang, see the releases page: https://github.com/dzbarsky/static-clang/releases
+
+An example URL is:
+https://github.com/dzbarsky/static-clang/releases/download/v20.1.1-4/linux_amd64.tar.zst
 
 3. Use Nix to create the toolchain_llvm
 Similar to option 2, Nix can be used to create a statically compiled toolchain_llvm. This has the advantage that it will be completely hermetic, and because the Nix packages are regularly maintained and tested, it will be easy to keep the toolchain up to date. e.g., Running "nix flake update" and rebuilding will be the only maintenance required.
@@ -143,6 +156,183 @@ Similar to option 2, Nix can be used to create a statically compiled toolchain_l
 This option essentially means leveraging the advantages of Nix and Nix packages.
 
 Therefore, I've chosen to go with option 3.... I guess I'll find out how bad the maintenance burden is.
+
+
+## How toolchain_llvm works
+
+To create the required sysroot and then configure bazel to have a usable toolchain_llvm we need to understand more about how toolchain_llvm works.
+
+The default toolchain_llvm bazel module essentially has phases:
+1. Download and compiles llvm
+2. Find all the executable binaries, some libs, and some includes, to make them usable by bazel.
+
+### Phase 1: LLVM Compilation
+The module downloads the LLVM source code and compiles it using options to use shared libraries. This makes all the compiled binaries available.
+
+### Phase 2: Toolchain Structure
+The toolchain_llvm expects a specific directory structure in the sysroot. The tool definitions come from multiple sources:
+
+1. Core tool requirements are defined in [rules_cc's unix_cc_configure.bzl](https://github.com/bazelbuild/rules_cc/blob/main/cc/private/toolchain/unix_cc_configure.bzl#L68), which specifies the essential tools needed:
+   ```python
+   [
+       "ar",           # Archiver
+       "ld",           # Linker
+       "llvm-cov",     # Coverage tool
+       "llvm-profdata",# Profile data tool
+       "cpp",          # C preprocessor
+       "gcc",          # C compiler
+       "dwp",          # DWARF packager
+       "gcov",         # Coverage tool
+       "nm",           # Symbol table dumper
+       "objcopy",      # Object copier
+       "objdump",      # Object dumper
+       "strip",        # Symbol stripper
+       "c++filt",      # C++ symbol demangler
+   ]
+   ```
+
+2. Additional tools required by [toolchain_llvm's common.bzl](https://github.com/bazel-contrib/toolchains_llvm/blob/master/toolchain/internal/common.bzl#L35):
+   ```python
+   [
+       "clang-cpp",    # C preprocessor
+       "clang-format", # Code formatter
+       "clang-tidy",   # Static analyzer
+       "clangd",       # Language server
+       "ld.lld",       # LLVM linker
+       "llvm-ar",      # LLVM archiver
+       "llvm-dwp",     # LLVM DWARF packager
+       "llvm-profdata",# LLVM profile data tool
+       "llvm-cov",     # LLVM coverage tool
+       "llvm-nm",      # LLVM symbol table dumper
+       "llvm-objcopy", # LLVM object copier
+       "llvm-objdump", # LLVM object dumper
+       "llvm-strip",   # LLVM symbol stripper
+   ]
+   ```
+
+   Note: Since version 1.4.0, `toolchain_llvm` requires `clangd`, `clang-format`, and `clang-tidy` to be present in the distribution. This is documented in [issue #481](https://github.com/bazel-contrib/toolchains_llvm/issues/481).
+
+3. Standard tool aliases are defined in [toolchain_llvm's aliases.bzl](https://github.com/bazel-contrib/toolchains_llvm/blob/master/toolchain/aliases.bzl), which maps standard tool names to their LLVM counterparts.
+
+4. Additional compiler tools and their patterns are defined in [rules_cc's cc_toolchain_config.bzl](https://github.com/bazelbuild/rules_cc/blob/master/cc/private/toolchain/cc_toolchain_config.bzl).
+
+The sysroot must provide all these tools in the following structure:
+
+```
+sysroot/
+├── bin/                    # All executable tools
+│   ├── clang              # Main C/C++ compiler (aliased as 'gcc')
+│   ├── clang-cpp          # C preprocessor (aliased as 'cpp')
+│   ├── clang++            # C++ compiler (aliased as 'g++')
+│   ├── clang-format       # Code formatter (required since toolchain_llvm 1.4.0)
+│   ├── clang-tidy         # Static analyzer (required since toolchain_llvm 1.4.0)
+│   ├── clangd             # Language server (required since toolchain_llvm 1.4.0)
+│   ├── ld.lld             # LLVM linker (aliased as 'ld')
+│   ├── llvm-ar            # LLVM archiver (aliased as 'ar')
+│   ├── llvm-as            # LLVM assembler (aliased as 'as')
+│   ├── llvm-nm            # LLVM symbol table dumper (aliased as 'nm')
+│   ├── llvm-objcopy       # LLVM object copier (aliased as 'objcopy')
+│   ├── llvm-objdump       # LLVM object dumper (aliased as 'objdump')
+│   ├── llvm-readelf       # LLVM ELF reader (aliased as 'readelf')
+│   ├── llvm-strip         # LLVM symbol stripper (aliased as 'strip')
+│   ├── llvm-dwp           # LLVM DWARF packager (aliased as 'dwp')
+│   ├── llvm-cov           # LLVM coverage tool
+│   ├── llvm-profdata      # LLVM profile data tool
+│   └── llvm-c++filt       # LLVM C++ symbol demangler
+├── include/               # Header files (required by rules_cc)
+│   ├── c++/              # C++ standard library headers
+│   └── clang/            # Clang-specific headers
+└── lib/                  # Library files (required by rules_cc)
+    ├── libc++.a          # LLVM C++ standard library
+    ├── libc++abi.a       # LLVM C++ ABI library
+    └── libunwind.a       # LLVM unwinder library
+```
+
+The `include` and `lib` directories are required by `rules_cc` for:
+- Finding system headers
+- Linking against standard libraries
+- Resolving compiler and linker dependencies
+
+These paths are used by the toolchain configuration to set up the correct include paths and library search paths for the compiler and linker.
+
+### Sysroot Configuration
+While the basic structure shows all components in a single sysroot, `toolchain_llvm` actually supports splitting these components across multiple sysroots. This is particularly useful for our architecture where we want to maintain separate sysroots for different purposes.
+
+In `MODULE.bazel`, we can configure the toolchain to use different sysroots for different components:
+
+```bazel
+llvm.toolchain(
+    name = "llvm_amd64",
+    llvm_version = "20.1.2",
+    stdlib = {
+        "linux-x86_64": "stdc++",
+    },
+)
+
+llvm.sysroot(
+    name = "llvm_amd64",
+    targets = ["linux-x86_64"],
+    # Main sysroot containing the LLVM tools
+    label = "@bazel_sysroot_llvm_amd64//:sysroot",
+    # Additional sysroots for headers and libraries
+    include_prefix = "@bazel_sysroot_library//:include",
+    lib_prefix = "@bazel_sysroot_lib_amd64//:lib",
+    # System libraries from both common and architecture-specific sysroots
+    system_libs = [
+        "@bazel_sysroot_library//:system_deps",
+        "@bazel_sysroot_library//:system_deps_static",
+        "@bazel_sysroot_lib_amd64//:system_libs",
+    ],
+)
+```
+
+This configuration allows us to:
+1. Keep the LLVM tools in `bazel_sysroot_llvm_amd64`
+2. Store common headers in `bazel_sysroot_library`
+3. Keep architecture-specific libraries in `bazel_sysroot_lib_amd64`
+
+The benefits of this separation include:
+- Smaller, more focused sysroots that can be updated independently
+- Better caching in Buildbarn as changes to one component don't invalidate others
+- Clearer organization of dependencies
+- Ability to share common components across architectures
+
+Each sysroot still needs to expose the correct filegroups in its `BUILD.bazel`:
+
+1. `bazel_sysroot_llvm_amd64`:
+```bazel
+filegroup(
+    name = "sysroot",
+    srcs = glob(["bin/**"]),
+    visibility = ["//visibility:public"],
+)
+```
+
+2. `bazel_sysroot_library`:
+```bazel
+filegroup(
+    name = "include",
+    srcs = glob(["include/**"]),
+    visibility = ["//visibility:public"],
+)
+
+filegroup(
+    name = "system_deps",
+    srcs = glob(["lib/**"]),
+    visibility = ["//visibility:public"],
+)
+```
+
+3. `bazel_sysroot_lib_amd64`:
+```bazel
+filegroup(
+    name = "lib",
+    srcs = glob(["lib/**"]),
+    visibility = ["//visibility:public"],
+)
+```
+
+This approach maintains our original goal of separation while still providing all the necessary components to the toolchain.
 
 ## Nix Created Sysroots
 
@@ -206,7 +396,9 @@ To see what's included, look at the [default.nix](https://github.com/randomizedc
 
 With the sysroots created, the idea now is to update the Bazel configuration in this repository so the toolchain_llvm uses the bazel_sysroot_llvm_amd64/arm64.
 
-In theory, this will mean the Go race test can be compiled. If I'm really lucky, this will also work with the remote Buildbarn runner, which is the ultimate goal.
+With all this setup, the first step is to try to get hello.cc to compile and run.
+
+In theory, with a basic hello.cc working, this will also mean the Go race test can be linked about the shared c++ code. If I'm really lucky, this will also work with the remote Buildbarn runner, which is the ultimate goal.
 
 Assuming this works, it will mean that this repository demonstrates:
 - Go race tests locally
@@ -478,3 +670,26 @@ For ARM64:
 ```bash
 bazel build --platforms=//:linux_arm64 //...
 ```
+
+```bash
+bazelisk clean --expunge && bazelisk build //:hello --config=local-sysroot --verbose_failures --sandbox_debug
+```
+
+## Latest Bazel Modules in Use
+
+In this repo, we are trying to use Bazel modules, and the latest versions of these, which are shown in the following table.
+
+| Module | Version | URL |
+|--------|---------|-----|
+| rules_cc | 0.1.1 | [bazelbuild/rules_cc](https://github.com/bazelbuild/rules_cc/tags) |
+| rules_go | 0.54.1 | [bazel-contrib/rules_go](https://github.com/bazel-contrib/rules_go/tags) |
+| toolchains_llvm | 1.4.0 | [bazel-contrib/toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm/tags) |
+| platforms | 1.0.0 | [bazelbuild/platforms](https://github.com/bazelbuild/platforms/tags) |
+| gazelle | 0.43.0 | [bazel-contrib/bazel-gazelle](https://github.com/bazel-contrib/bazel-gazelle/tags) |
+
+For toolchain_llvm we are using 20.1.2, because the Bazel module is lagging behind.  In the Nix built sysroot we're actually on 20.1.5, because we track the "unstable" which is kept very up to date.
+```
+llvm.toolchain(
+    name = "llvm_amd64",
+    llvm_version = "20.1.2",
+)

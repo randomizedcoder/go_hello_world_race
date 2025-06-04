@@ -132,3 +132,9 @@ drwxr-xr-x   4 das  users        4096 May 29 11:25 bazel_sysroot_library
 drwxr-xr-x   4 das  users        4096 May 29 13:40 bazel_sysroot_llvm_amd64
 drwxr-xr-x   4 das  users        4096 May 29 13:57 bazel_sysroot_llvm_arm64
 ```
+
+toolchains issue
+https://github.com/bazelbuild/bazel/issues/7746
+
+clang-tidy issue
+https://github.com/bazel-contrib/toolchains_llvm/issues/481
