@@ -342,6 +342,13 @@ One option would be to use Nix to create a single sysroot with all the things re
 
 The downside would be that the single sysroot would get large, and whenever it was updated, each runner in the Buildbarn cluster would need to download the new version. Instead, I'm going to try having multiple smaller sysroots, so that any updates will be smaller.
 
+**Important Note on `http_archive` and `build_file_content`**:
+When using `http_archive` to fetch an archive (like our Nix-generated sysroots), if the archive itself already contains a `BUILD.bazel` or `BUILD` file at its root (after `strip_prefix` is applied), then the `build_file_content` attribute of the `http_archive` rule will be **ignored** for that archive. Bazel will use the `BUILD.bazel` file from the archive instead.
+
+This is relevant for `bazel_sysroot_llvm_amd64` and `bazel_sysroot_llvm_arm64` because their Nix scripts (e.g., `bazel_sysroot_llvm_amd64/default.nix`) generate and include a `BUILD.bazel` file within the `sysroot/` directory. This `sysroot/` directory becomes the root of the Bazel repository after `strip_prefix`, so its `BUILD.bazel` takes precedence over any `build_file_content` specified in `deps.bzl` for these specific archives.
+For other archives like `bazel_sysroot_library` that do *not* include their own `BUILD.bazel` file in the tarball, the `build_file_content` in `deps.bzl` *is* used to generate their `BUILD.bazel` file.
+
+
 The sysroots will be:
 - bazel_sysroot_library
 - bazel_sysroot_llvm_amd64
@@ -686,6 +693,8 @@ In this repo, we are trying to use Bazel modules, and the latest versions of the
 | toolchains_llvm | 1.4.0 | [bazel-contrib/toolchains_llvm](https://github.com/bazel-contrib/toolchains_llvm/tags) |
 | platforms | 1.0.0 | [bazelbuild/platforms](https://github.com/bazelbuild/platforms/tags) |
 | gazelle | 0.43.0 | [bazel-contrib/bazel-gazelle](https://github.com/bazel-contrib/bazel-gazelle/tags) |
+| bazel-skylib | 1.7.1 [bazelbuild/bazel-skylib/tags](https://github.com/bazelbuild/bazel-skylib/tags) |g
+
 
 For toolchain_llvm we are using 20.1.2, because the Bazel module is lagging behind.  In the Nix built sysroot we're actually on 20.1.5, because we track the "unstable" which is kept very up to date.
 ```

@@ -4,222 +4,82 @@
 
 module(
     name = "go_hello_world_race",
-    version = "1.0",
+    version = "1.0.0", # Consistent versioning
 )
 
-bazel_dep(name = "toolchains_llvm", version = "1.4.0")
-bazel_dep(name = "platforms", version = "1.0.0")
-bazel_dep(name = "rules_cc", version = "0.1.1")
+# Core Bazel dependencies
+bazel_dep(name = "bazel_skylib", version = "1.5.0")
+bazel_dep(name = "platforms", version = "1.0.0") # As per README
 
-# Configure LLVM toolchains
+# C++ toolchain dependencies
+bazel_dep(name = "toolchains_llvm", version = "1.4.0")
+bazel_dep(name = "rules_cc", version = "0.1.1") # As per README
+
+# Go dependencies (as per README)
+bazel_dep(name = "rules_go", version = "0.54.1", dev_dependency = True)
+bazel_dep(name = "gazelle", version = "0.43.0", dev_dependency = True)
+
+# # Module extension for fetching custom Nix-built sysroots - Temporarily disabled for testing llvm.toolchain_package
+# sysroots_ext = use_extension("//:deps.bzl", "sysroots_ext")
+# # Explicitly call a tag from the extension to ensure it's processed.
+# sysroots_ext.declare_toolchain_deps()
+
+# LLVM toolchain configuration using toolchains_llvm extension
 llvm = use_extension("@toolchains_llvm//toolchain/extensions:llvm.bzl", "llvm")
 
-# Configure the AMD64 toolchain
 llvm.toolchain(
-    name = "llvm_amd64",
-    llvm_version = "20.1.2",
-    stdlib = {
-        "linux-x86_64": "stdc++",
-    },
+    name = "local",
+    llvm_version = "20.1.2",  # You can change this to another supported version
 )
 
-# Use http_archive to fetch the sysroot
-http_archive = use_repo_rule("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+use_repo(llvm, "local")
 
-http_archive(
-    name = "bazel_sysroot_llvm_amd64",
-    build_file_content = """
-package(default_visibility = ["//visibility:public"])
+# # Define the LLVM toolchain package using your pre-built Nix sysroot
+# llvm.toolchain_package(
+#     name = "llvm_amd64_custom_pkg", # A name for this package definition
+#     urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64/archive/refs/heads/main.tar.gz"],
+#     sha256 = "bcb9792c3eac7f9e1268065792af94d286b2739361bcf28d7f68226f91da2830",
+#     strip_prefix = "bazel_sysroot_llvm_amd64-main/sysroot", # This archive contains its own BUILD.bazel
+# )
 
-# Main filegroup that includes everything
-filegroup(
-    name = "all",
-    srcs = [":sysroot"],
-)
+# # --- AMD64 Toolchain using Nix-built sysroots ---
+# llvm.toolchain(
+#     name = "llvm_amd64",      # This name generates the @llvm_amd64 repository
+#     llvm_version = "20.1.5",  # Align with actual LLVM version (20.1.5) in Nix sysroot
+#     # Your README indicates LLVM sysroots provide libc++, so stdlib should be "libc++"
+#     # If you intend to use libstdc++, ensure your sysroots provide it.
+#     stdlib = {
+#         "linux-x86_64": "libc++",
+#     },
+#     toolchain_package = ":llvm_amd64_custom_pkg", # Use the package defined above
+# )
 
-# Bin directory for tools
-filegroup(
-    name = "bin",
-    srcs = glob(["bin/**"]),
-    visibility = ["//visibility:public"],
-)
+# # Temporarily comment out llvm.sysroot to isolate llvm.toolchain_package and llvm.toolchain
+# # llvm.sysroot(
+# #     name = "llvm_amd64",      # Must match the llvm.toolchain name above
+# #     targets = ["linux-x86_64"], # Target platform for this sysroot configuration
+# #     # By not specifying 'label' or 'sysroot_package' here, and since the
+# #     # corresponding llvm.toolchain uses 'toolchain_package', toolchains_llvm
+# #     # should attempt to find the sysroot components (include/, lib/) within
+# #     # the repository created by 'llvm_amd64_custom_pkg'.
+# # )
 
-# Empty lib directory for linker components
-filegroup(
-    name = "lib",
-    srcs = [],
-    visibility = ["//visibility:public"],
-)
+# # (Optional but good practice) Define a hub for all your LLVM toolchains
+# llvm.toolchain_hub(
+#     name = "custom_llvm_toolchains_hub",
+# )
 
-# Empty include directory for compiler components
-filegroup(
-    name = "include",
-    srcs = [],
-    visibility = ["//visibility:public"],
-)
+# # Register all toolchains from the hub for auto-detection by Bazel.
+# # This makes the "@llvm_amd64//:cc-toolchain-x86_64-linux" toolchain available.
+# register_toolchains(
+#     "@custom_llvm_toolchains_hub//:all", # This will include @llvm_amd64 and any others you add
+# )
 
-# Sysroot filegroup for bin directory
-filegroup(
-    name = "sysroot",
-    srcs = [":bin", ":lib", ":include"],
-)
+# # end
 
-# Individual tool targets
-filegroup(
-    name = "clang",
-    srcs = glob(["bin/clang*"]),
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "clang-cpp",
-    srcs = ["bin/clang-cpp"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "lld",
-    srcs = glob(["bin/lld*"]),
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-ar",
-    srcs = ["bin/llvm-ar"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-as",
-    srcs = ["bin/llvm-as"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-nm",
-    srcs = ["bin/llvm-nm"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-objcopy",
-    srcs = ["bin/llvm-objcopy"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-objdump",
-    srcs = ["bin/llvm-objdump"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-readelf",
-    srcs = ["bin/llvm-readelf"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-strip",
-    srcs = ["bin/llvm-strip"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "llvm-dwp",
-    srcs = ["bin/llvm-dwp"],
-    visibility = ["//visibility:public"],
-)
-
-# Standard tool aliases
-filegroup(
-    name = "ar",
-    srcs = [":llvm-ar"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "as",
-    srcs = [":llvm-as"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "nm",
-    srcs = [":llvm-nm"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "objcopy",
-    srcs = [":llvm-objcopy"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "objdump",
-    srcs = [":llvm-objdump"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "readelf",
-    srcs = [":llvm-readelf"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "strip",
-    srcs = [":llvm-strip"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "dwp",
-    srcs = [":llvm-dwp"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "ld",
-    srcs = [":lld"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "gcc",
-    srcs = [":clang"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "g++",
-    srcs = [":clang"],
-    visibility = ["//visibility:public"],
-)
-
-filegroup(
-    name = "cpp",
-    srcs = [":clang-cpp"],
-    visibility = ["//visibility:public"],
-)
-""",
-    urls = ["https://github.com/randomizedcoder/bazel_sysroot_llvm_amd64/archive/refs/heads/main.tar.gz"],
-    sha256 = "03cfe7f73c392fd3eeed8c7490d194f39007cbb9569a00839a4668c6865dc51a",
-    strip_prefix = "bazel_sysroot_llvm_amd64-main/sysroot",
-)
-
-llvm.toolchain_root(
-    name = "llvm_amd64",
-    label = "@bazel_sysroot_llvm_amd64//:sysroot",
-)
-
-llvm.sysroot(
-    name = "llvm_amd64",
-    targets = ["linux-x86_64"],
-    label = "@bazel_sysroot_llvm_amd64//:sysroot",
-)
-
-use_repo(llvm, "llvm_amd64")
-
-# end
+# # Note: You would add similar llvm.toolchain and llvm.sysroot definitions
+# # for "llvm_arm64" when you're ready, pointing to:
+# # label = "@bazel_sysroot_llvm_arm64//:sysroot",
+# # lib_prefix = "@bazel_sysroot_lib_arm64//:lib",
+# # system_libs = [..., "@bazel_sysroot_lib_arm64//:system_libs"],
+# # And ensure "llvm_arm64" is part of the "custom_llvm_toolchains_hub".

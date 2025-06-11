@@ -134,4 +134,8 @@ test_amd64:
 cycle:
 	bazelisk clean --expunge && bazelisk test //:hello_test_amd64 --verbose_failures  --config=local-sysroot --sandbox_debug
 
+verbose:
+	bazelisk clean --expunge && bazelisk test //:hello_test_amd64 --verbose_failures  --config=local-sysroot --sandbox_debug --experimental_repository_resolved_file
+
+
 # end

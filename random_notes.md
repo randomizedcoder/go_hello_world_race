@@ -138,3 +138,15 @@ https://github.com/bazelbuild/bazel/issues/7746
 
 clang-tidy issue
 https://github.com/bazel-contrib/toolchains_llvm/issues/481
+
+
+cat ~/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/command.log
+
+[das@l:~/Downloads/go_hello_world_race]$ find ~/.cache/bazel/_bazel_das/ -name 'java.log'
+/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/java.log
+find: ‘/home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/sandbox/inaccessibleHelperDir’: Permission denied
+
+[das@l:~/Downloads/go_hello_world_race]$ cat /home/das/.cache/bazel/_bazel_das/2069c7e7bbea1cec17d73a6b1498e560/java.log
+
+copying bazel config based on this section
+https://steven.casagrande.io/posts/2024/sysroot-generation-toolchains-llvm/#using-the-sysroot-package
